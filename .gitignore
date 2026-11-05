@@ -1,0 +1,24 @@
+# Secretos
+.env
+*.env
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Frontend
+node_modules/
+dist/
+
+# Varios
+backups/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
