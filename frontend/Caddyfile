@@ -8,6 +8,9 @@
 		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		# Los navegadores ignoran HSTS servido por HTTP, así que con SITE_ADDRESS=":80" no tiene efecto.
+		# Sin includeSubDomains: no sabemos qué más cuelga del dominio.
+		Strict-Transport-Security "max-age=31536000"
 		-Server
 	}
 
@@ -21,6 +24,9 @@
 
 	# Frontend compilado (SPA)
 	handle {
+		# CSP solo para la SPA (no para /api/*, donde /api/docs carga Swagger desde un CDN).
+		# style-src 'unsafe-inline': React y Recharts usan atributos style. connect-src 'self' cubre ws/wss al mismo host.
+		header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 		root * /srv
 		@assets path /assets/*
 		header @assets Cache-Control "public, max-age=31536000, immutable"

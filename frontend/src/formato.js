@@ -1,3 +1,6 @@
+/** Texto de cada modo de la lámpara (estado actual y tabla de eventos). */
+export const NOMBRE_MODO = { AUTO: 'Automático', ON: 'Manual: encendida', OFF: 'Manual: apagada' }
+
 const fechaHora = new Intl.DateTimeFormat('es', {
   day: '2-digit',
   month: '2-digit',

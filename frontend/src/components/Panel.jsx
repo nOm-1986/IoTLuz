@@ -26,9 +26,14 @@ function useAhora(cadaMs = 1000) {
   return ahora
 }
 
+/** Solo este texto se vuelve a dibujar cada segundo, no todo el panel (ni la gráfica). */
+function Actualizado({ iso }) {
+  const ahora = useAhora()
+  return <p className="tenue pequeno">Actualizado {haceCuanto(iso, ahora)}</p>
+}
+
 export default function Panel({ token, alSalir, alExpirar }) {
   const { estado, conectado, intentos } = useEnVivo(token, alExpirar)
-  const ahora = useAhora()
   const s = estado?.snapshot
   const mqtt = !!estado?.mqtt_conectado
   const enLinea = !!estado?.arduino_en_linea
@@ -64,7 +69,7 @@ export default function Panel({ token, alSalir, alExpirar }) {
           <img src="/favicon.svg" alt="" width="28" height="28" />
           <div>
             <h1>IoTLuz</h1>
-            <p className="tenue pequeno">Actualizado {haceCuanto(estado?.ultima_actualizacion, ahora)}</p>
+            <Actualizado iso={estado?.ultima_actualizacion} />
           </div>
         </div>
         <div className="indicadores" aria-live="polite">

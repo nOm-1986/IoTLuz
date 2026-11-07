@@ -34,6 +34,9 @@ class _Conexion:
 
 
 class Difusor:
+    # Segundos que tiene el navegador para enviar el token tras abrir el WebSocket.
+    espera_auth_s: float = 5.0
+
     def __init__(self) -> None:
         self.loop: asyncio.AbstractEventLoop | None = None
         self._conexiones: set[_Conexion] = set()
@@ -53,17 +56,32 @@ class Difusor:
         for c in list(self._conexiones):
             c.poner(estado)
 
-    async def atender(self, ws: WebSocket, token: str | None, estado_inicial) -> None:
-        settings = ws.app.state.settings
+    async def _autenticar(self, ws: WebSocket) -> dict | None:
+        """Espera {"token": "..."} como primer mensaje. Si no sirve, cierra con 4401/4402 y devuelve None."""
         try:
-            datos = decodificar_token(settings, token or "")
-        except jwt.InvalidTokenError:
-            # Se rechaza el handshake (el navegador recibe un 403).
-            await ws.close(code=CIERRE_TOKEN_INVALIDO)
-            log.info("WebSocket rechazado: token ausente o inválido.")
+            with anyio.fail_after(self.espera_auth_s):
+                msg = await ws.receive_json()
+            token = msg.get("token") if isinstance(msg, dict) else None
+            return decodificar_token(ws.app.state.settings, token if isinstance(token, str) else "")
+        except WebSocketDisconnect:
+            return None
+        except jwt.ExpiredSignatureError:
+            codigo, motivo = CIERRE_TOKEN_EXPIRADO, "token expirado"
+        except (jwt.InvalidTokenError, TimeoutError, ValueError, KeyError):
+            # ValueError/KeyError: el primer mensaje no es JSON o no es texto.
+            codigo, motivo = CIERRE_TOKEN_INVALIDO, "token ausente o inválido"
+        log.info("WebSocket rechazado: %s.", motivo)
+        with contextlib.suppress(Exception):
+            await ws.close(code=codigo)
+        return None
+
+    async def atender(self, ws: WebSocket, estado_inicial) -> None:
+        # El token no va en la URL (acabaría en los logs de Caddy y uvicorn): llega como primer mensaje.
+        await ws.accept()
+        datos = await self._autenticar(ws)
+        if datos is None:
             return
 
-        await ws.accept()
         con = _Conexion(ws)
         self._conexiones.add(con)
         log.info("Cliente WebSocket conectado (%d en total).", self.num_clientes)

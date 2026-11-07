@@ -129,10 +129,14 @@ def test_no_guarda_si_fuera_de_linea(servicio):
     assert _lecturas(servicio) == []
 
 
-def test_no_guarda_si_snapshot_incompleto(servicio):
+def test_no_guarda_si_snapshot_incompleto(servicio, caplog):
     servicio.procesar_mensaje("ldr", "10", retenido=False)
-    assert servicio.guardar_lectura_si_procede() is False
+    with caplog.at_level("DEBUG", logger="iotluz.mqtt"):
+        assert servicio.guardar_lectura_si_procede() is False
     assert _lecturas(servicio) == []
+    # Lo descarta la comprobación, no un INSERT fallido por columnas NULL.
+    assert "snapshot incompleto" in caplog.text
+    assert "Error de base de datos" not in caplog.text
 
 
 def test_guarda_lectura_completa_en_linea(servicio, reloj):

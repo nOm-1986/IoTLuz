@@ -23,13 +23,17 @@ export function useEnVivo(token, alExpirar) {
     let espera = 1000
 
     const conectar = () => {
-      ws = new WebSocket(urlWebSocket(token))
-      ws.onopen = () => {
-        espera = 1000
-        setConectado(true)
-        setIntentos(0)
-      }
+      let autenticado = false
+      ws = new WebSocket(urlWebSocket())
+      // Primer mensaje: el token. El servidor responde con el estado o cierra con 4401/4402.
+      ws.onopen = () => ws.send(JSON.stringify({ token }))
       ws.onmessage = (ev) => {
+        if (!autenticado) {
+          autenticado = true
+          espera = 1000
+          setConectado(true)
+          setIntentos(0)
+        }
         try {
           setEstado(JSON.parse(ev.data))
         } catch {

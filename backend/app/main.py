@@ -103,8 +103,8 @@ def create_app(
     app.include_router(_rutas_protegidas(), dependencies=[Depends(usuario_actual)])
 
     @app.websocket("/ws")
-    async def websocket(ws: WebSocket, token: str | None = None) -> None:
-        await difusor.atender(ws, token, servicio.estado_actual)
+    async def websocket(ws: WebSocket) -> None:
+        await difusor.atender(ws, servicio.estado_actual)
 
     app.state.difusor = difusor
     return app

@@ -6,6 +6,7 @@ import io
 import jwt
 import pytest
 
+from app.auth import LimitadorLogin
 from app.config import EJEMPLO_ADMIN_PASSWORD, EJEMPLO_JWT_SECRET, Settings, verificar_secretos
 
 from .conftest import BASE, conectar, publicar_todo
@@ -48,6 +49,14 @@ def test_token_expirado_401(client, settings):
     assert r.json()["detail"] == "Token expirado"
 
 
+def test_token_de_otro_usuario_401(client, settings):
+    # Bien firmado y vigente, pero el "sub" no es el administrador configurado.
+    otro = jwt.encode({"sub": "intruso", "exp": 9999999999}, settings.jwt_secret, algorithm="HS256")
+    r = client.get("/api/estado", headers={"Authorization": f"Bearer {otro}"})
+    assert r.status_code == 401
+    assert r.json()["detail"] == "Token inválido"
+
+
 def test_login_correcto_e_incorrecto(client):
     assert client.post("/api/login", json={"usuario": "admin", "clave": "mal"}).status_code == 401
     assert client.post("/api/login", json={"usuario": "otro", "clave": "clave-de-pruebas-larga"}).status_code == 401
@@ -61,6 +70,33 @@ def test_login_rate_limit(client):
     r = client.post("/api/login", json={"usuario": "admin", "clave": "clave-de-pruebas-larga"})
     assert r.status_code == 429
     assert int(r.headers["Retry-After"]) > 0
+
+
+def test_limitador_olvida_ips_caducadas(monkeypatch):
+    reloj = [1000.0]
+    monkeypatch.setattr("app.auth.time.monotonic", lambda: reloj[0])
+    lim = LimitadorLogin(max_fallos=2, ventana_s=60)
+
+    lim.registrar_fallo("1.1.1.1")
+    lim.registrar_fallo("1.1.1.1")
+    assert lim.segundos_bloqueo("1.1.1.1") == 60
+    assert lim.segundos_bloqueo("2.2.2.2") == 0
+    assert lim.num_ips == 1  # consultar una IP nueva no crea entrada
+
+    reloj[0] += 61
+    assert lim.segundos_bloqueo("1.1.1.1") == 0
+    assert lim.num_ips == 0  # la entrada caducada se borra
+
+
+def test_limitador_purga_ips_caducadas_cuando_hay_muchas(monkeypatch):
+    reloj = [1000.0]
+    monkeypatch.setattr("app.auth.time.monotonic", lambda: reloj[0])
+    lim = LimitadorLogin(max_fallos=5, ventana_s=60)
+    for i in range(LimitadorLogin.MAX_IPS_SIN_PURGAR):
+        lim.registrar_fallo(f"10.0.{i // 256}.{i % 256}")
+    reloj[0] += 61
+    lim.registrar_fallo("9.9.9.9")
+    assert lim.num_ips == 1
 
 
 def test_secretos_de_ejemplo_bloquean_produccion(caplog):

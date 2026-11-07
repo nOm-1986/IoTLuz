@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { descargarCsv, obtenerLecturas } from '../api.js'
 import { formatoFechaHora, formatoHora, formatoHoraSeg } from '../formato.js'
@@ -65,7 +65,8 @@ function InfoPunto({ active, payload }) {
   )
 }
 
-export default function Grafica({ token }) {
+// memo: el panel se redibuja con cada mensaje del WebSocket; la gráfica solo depende del token.
+export default memo(function Grafica({ token }) {
   const [ventana, setVentana] = useState(VENTANAS[0])
   const [datos, setDatos] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -73,22 +74,28 @@ export default function Grafica({ token }) {
   const [descargando, setDescargando] = useState(false)
   const colores = useColores()
 
-  const cargar = useCallback(() => {
-    obtenerLecturas(token, ventana.minutos, ventana.limite)
-      .then((filas) => {
-        setDatos(conHuecos(filas.map((f) => ({ ...f, t: new Date(f.ts).getTime() }))))
-        setError('')
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setCargando(false))
-  }, [token, ventana])
-
   useEffect(() => {
+    // Una respuesta que llega después de cambiar de ventana (o desmontar) se descarta.
+    let vigente = true
+    const cargar = () => {
+      obtenerLecturas(token, ventana.minutos, ventana.limite)
+        .then((filas) => {
+          if (!vigente) return
+          setDatos(conHuecos(filas.map((f) => ({ ...f, t: new Date(f.ts).getTime() }))))
+          setError('')
+        })
+        .catch((e) => vigente && setError(e.message))
+        .finally(() => vigente && setCargando(false))
+    }
+    setDatos([]) // no mostrar los datos de la ventana anterior con la etiqueta de la nueva
     setCargando(true)
     cargar()
     const id = setInterval(cargar, RECARGA_MS)
-    return () => clearInterval(id)
-  }, [cargar])
+    return () => {
+      vigente = false
+      clearInterval(id)
+    }
+  }, [token, ventana])
 
   const descargar = async () => {
     setDescargando(true)
@@ -222,4 +229,4 @@ export default function Grafica({ token }) {
       )}
     </section>
   )
-}
+})

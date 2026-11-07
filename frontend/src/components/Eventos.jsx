@@ -1,9 +1,9 @@
-import { formatoFechaHora } from '../formato.js'
+import { NOMBRE_MODO, formatoFechaHora } from '../formato.js'
 
 const TIPO = { estado: 'Lámpara', modo: 'Modo', conexion: 'Arduino' }
 const VALOR = {
   estado: { ON: 'Encendida', OFF: 'Apagada' },
-  modo: { AUTO: 'Automático', ON: 'Manual: encendida', OFF: 'Manual: apagada' },
+  modo: NOMBRE_MODO,
   conexion: { en_linea: 'En línea', fuera_de_linea: 'Fuera de línea' },
 }
 

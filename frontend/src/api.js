@@ -103,7 +103,8 @@ export async function descargarCsv(token) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-export function urlWebSocket(token) {
+/** URL del WebSocket. El token NO va aquí (acabaría en los logs): se envía como primer mensaje. */
+export function urlWebSocket() {
   const protocolo = location.protocol === 'https:' ? 'wss:' : 'ws:'
-  return `${protocolo}//${location.host}/ws?token=${encodeURIComponent(token)}`
+  return `${protocolo}//${location.host}/ws`
 }

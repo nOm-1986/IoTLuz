@@ -11,8 +11,6 @@ from typing import Any
 
 log = logging.getLogger("iotluz.estado")
 
-# tema relativo -> (clave del snapshot, conversor que lanza ValueError si el valor no es válido)
-
 
 def _enum(*validos: str) -> Callable[[str], str]:
     def conv(t: str) -> str:
@@ -48,6 +46,7 @@ def _pir(t: str) -> bool:
     return v == "1"
 
 
+# tema relativo -> (clave del snapshot, conversor que lanza ValueError si el valor no es válido)
 TEMAS: dict[str, tuple[str, Callable[[str], Any]]] = {
     "estado": ("estado", _enum("ON", "OFF")),
     "modo": ("modo", _enum("AUTO", "ON", "OFF")),
@@ -66,7 +65,6 @@ TEMAS_CON_EVENTO = ("estado", "modo")
 class Resultado:
     clave: str
     valor: Any
-    cambio: bool
     eventos: list[tuple[str, str]] = field(default_factory=list)
 
 
@@ -96,7 +94,7 @@ class Snapshot:
             if not retenido:
                 self._ultimo_vivo = ahora
 
-        res = Resultado(clave=clave, valor=valor, cambio=anterior != valor)
+        res = Resultado(clave=clave, valor=valor)
         # Solo cambios "en vivo" respecto a un valor anterior conocido generan evento.
         if tema in TEMAS_CON_EVENTO and not retenido and anterior is not None and anterior != valor:
             res.eventos.append((tema, valor))

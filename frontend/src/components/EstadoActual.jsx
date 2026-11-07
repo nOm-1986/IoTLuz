@@ -1,6 +1,4 @@
-import { formatoDecimal, formatoMinutos, formatoSegundos } from '../formato.js'
-
-const NOMBRE_MODO = { AUTO: 'Automático', ON: 'Manual: encendida', OFF: 'Manual: apagada' }
+import { NOMBRE_MODO, formatoDecimal, formatoMinutos, formatoSegundos } from '../formato.js'
 
 function Bombilla({ encendida }) {
   return (
