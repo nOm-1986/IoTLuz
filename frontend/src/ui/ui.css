@@ -1,6 +1,6 @@
 /*
  * IoTLuz: base y componentes. Solo usa variables de tema/tokens.css.
- * Regla de color: violeta = interfaz; ámbar = luz encendida o luz medida.
+ * Regla de color: acento = interfaz; ámbar = luz encendida o luz medida.
  */
 
 /* ================================================================ base */
@@ -53,11 +53,11 @@ select {
   color: var(--color-texto);
 }
 :focus-visible {
-  outline: 2px solid var(--color-violeta);
+  outline: 2px solid var(--color-acento);
   outline-offset: 3px;
 }
 a {
-  color: var(--color-violeta-texto);
+  color: var(--color-acento-texto);
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
@@ -76,7 +76,7 @@ a {
   background-clip: padding-box;
 }
 input {
-  caret-color: var(--color-violeta);
+  caret-color: var(--color-acento);
 }
 
 /* Utilidades de texto */
@@ -121,7 +121,7 @@ input {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  background: var(--resplandor-violeta);
+  background: var(--resplandor-acento);
   opacity: 0;
   transition: opacity var(--dur-encendido) var(--curva-salida);
   pointer-events: none;
@@ -188,15 +188,15 @@ input {
 }
 
 .boton-primario {
-  background: var(--relieve-violeta);
-  color: var(--color-sobre-violeta);
-  box-shadow: var(--filo-color), var(--sombra-relieve), var(--brillo-violeta-suave);
+  background: var(--relieve-acento);
+  color: var(--color-sobre-acento);
+  box-shadow: var(--filo-color), var(--sombra-relieve), var(--brillo-acento-suave);
 }
 .boton-primario:hover:not(:disabled) {
-  box-shadow: var(--filo-color), var(--sombra-relieve), var(--brillo-violeta);
+  box-shadow: var(--filo-color), var(--sombra-relieve), var(--brillo-acento);
 }
 .boton-primario:active:not(:disabled) {
-  box-shadow: inset 0 3px 8px rgb(0 0 0 / 0.35), var(--brillo-violeta-suave);
+  box-shadow: inset 0 3px 8px rgb(0 0 0 / 0.35), var(--brillo-acento-suave);
 }
 
 /* Secundario: sobresale de la superficie y se hunde al pulsarlo. */
@@ -271,9 +271,9 @@ input {
   font-weight: var(--peso-medio);
 }
 .interruptor-pista {
-  --pista-color: var(--relieve-violeta);
-  --pista-brillo: var(--brillo-violeta);
-  --perilla-on: var(--relieve-perilla);
+  --pista-color: var(--relieve-acento);
+  --pista-brillo: var(--brillo-acento);
+  --perilla-on: var(--color-sobre-acento);
   position: relative;
   flex: none;
   width: 3.5rem;
@@ -288,7 +288,7 @@ input {
 .interruptor-ambar .interruptor-pista {
   --pista-color: var(--relieve-ambar);
   --pista-brillo: var(--brillo-ambar);
-  --perilla-on: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff3dc 50%, #f6c873 100%);
+  --perilla-on: #fff6e6;
 }
 .interruptor-perilla {
   position: absolute;
@@ -306,12 +306,12 @@ input {
 /* Encendido: la pista sigue hundida, pero llena de color y con brillo. */
 .interruptor[aria-checked='true'] .interruptor-pista {
   background: var(--pista-color);
-  box-shadow: inset 2px 2px 5px rgb(0 0 0 / 0.35), var(--pista-brillo);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.25), var(--pista-brillo);
 }
 .interruptor[aria-checked='true'] .interruptor-perilla {
   transform: translateX(1.5rem);
   background: var(--perilla-on);
-  box-shadow: var(--sombra-pulgar), 0 0 10px rgb(255 255 255 / 0.35);
+  box-shadow: var(--sombra-pulgar);
 }
 .interruptor:disabled .interruptor-pista,
 .interruptor:disabled .interruptor-etiqueta {
@@ -364,9 +364,9 @@ input {
 }
 /* El segmento elegido sobresale del carril hundido. */
 .segmento[aria-pressed='true'] {
-  background: var(--relieve-violeta);
-  color: var(--color-sobre-violeta);
-  box-shadow: var(--filo-color), var(--brillo-violeta);
+  background: var(--relieve-acento);
+  color: var(--color-sobre-acento);
+  box-shadow: var(--filo-color), var(--brillo-acento);
 }
 /* El segmento "encendido" (ON confirmado) usa la luz, no la interfaz. */
 .segmento[aria-pressed='true'][data-luz='true'] {
@@ -376,7 +376,7 @@ input {
 }
 .segmento[data-pendiente='true'] {
   color: var(--color-texto);
-  box-shadow: inset 0 0 0 1.5px var(--color-violeta);
+  box-shadow: inset 0 0 0 1.5px var(--color-acento);
   animation: latido var(--dur-pulso) var(--curva-suave) infinite;
 }
 .segmento:disabled {
@@ -433,8 +433,9 @@ input {
   flex: none;
 }
 .deslizador input[type='range'] {
-  --relleno: var(--color-violeta);
-  --relleno-brillo: rgb(148 116 255 / 0.55);
+  --relleno: var(--color-acento);
+  --relleno-brillo: transparent;
+  --pulgar-fondo: var(--relieve-perilla);
   --pct: 50%;
   flex: 1;
   width: 100%;
@@ -449,6 +450,8 @@ input {
 .deslizador-ambar input[type='range'] {
   --relleno: var(--color-ambar);
   --relleno-brillo: rgb(255 181 71 / 0.6);
+  /* El pulgar del ámbar lleva un núcleo de luz. */
+  --pulgar-fondo: radial-gradient(circle, var(--color-ambar) 0 28%, var(--relieve-perilla) 31%);
 }
 .deslizador input[type='range']:disabled {
   cursor: not-allowed;
@@ -473,10 +476,7 @@ input {
   height: var(--pulgar);
   margin-top: calc((var(--pista-alto) - var(--pulgar)) / 2);
   border-radius: 50%;
-  /* Pulgar en relieve con el núcleo del color del relleno. */
-  background:
-    radial-gradient(circle, var(--relleno) 0 28%, transparent 31%),
-    var(--relieve-perilla);
+  background: var(--pulgar-fondo);
   border: 0;
   box-shadow: var(--sombra-pulgar), 0 0 12px -2px var(--relleno-brillo);
   transition:
@@ -484,13 +484,13 @@ input {
     transform var(--dur-rapida) var(--curva-salida);
 }
 .deslizador input[type='range']:hover::-webkit-slider-thumb {
-  box-shadow: var(--sombra-pulgar), 0 0 0 6px var(--color-violeta-suave);
+  box-shadow: var(--sombra-pulgar), 0 0 0 6px var(--color-acento-suave), 0 0 12px -2px var(--relleno-brillo);
 }
 .deslizador input[type='range']:active::-webkit-slider-thumb {
   transform: scale(1.12);
 }
 .deslizador input[type='range']:focus-visible::-webkit-slider-thumb {
-  box-shadow: var(--sombra-pulgar), 0 0 0 4px var(--color-fondo), 0 0 0 6px var(--color-violeta);
+  box-shadow: var(--sombra-pulgar), 0 0 0 4px var(--color-fondo), 0 0 0 6px var(--color-acento);
 }
 /* Firefox */
 .deslizador input[type='range']::-moz-range-track {
@@ -509,14 +509,12 @@ input {
   width: var(--pulgar);
   height: var(--pulgar);
   border-radius: 50%;
-  background:
-    radial-gradient(circle, var(--relleno) 0 28%, transparent 31%),
-    var(--relieve-perilla);
+  background: var(--pulgar-fondo);
   border: 0;
   box-shadow: var(--sombra-pulgar), 0 0 12px -2px var(--relleno-brillo);
 }
 .deslizador input[type='range']:focus-visible::-moz-range-thumb {
-  box-shadow: var(--sombra-pulgar), 0 0 0 4px var(--color-fondo), 0 0 0 6px var(--color-violeta);
+  box-shadow: var(--sombra-pulgar), 0 0 0 4px var(--color-fondo), 0 0 0 6px var(--color-acento);
 }
 /* En claro, el ámbar sobre la pista clara no llega a 3:1: el pulgar lleva un aro oscuro. */
 :root[data-tema='claro'] .deslizador-ambar input[type='range']::-webkit-slider-thumb {
@@ -550,16 +548,18 @@ input {
 .disco-sm {
   --disco-tam: 2.75rem;
 }
-.disco-violeta {
-  color: var(--color-violeta-texto);
+.disco-acento {
+  color: var(--color-acento-texto);
 }
 /* Encendido: el icono se vuelve luz y el disco irradia ámbar. */
 .disco-encendido {
   color: var(--color-ambar);
+  background: var(--color-ambar-suave);
   box-shadow:
     var(--sombra-relieve),
-    inset 0 0 18px rgb(255 181 71 / 0.18),
-    0 0 40px 2px rgb(255 181 71 / 0.3);
+    0 0 0 1px rgb(255 181 71 / 0.45),
+    inset 0 0 18px rgb(255 181 71 / 0.25),
+    0 0 36px 4px rgb(255 181 71 / 0.4);
 }
 .disco-encendido svg {
   filter: drop-shadow(0 0 6px rgb(255 181 71 / 0.7));
@@ -618,9 +618,9 @@ input {
   background: var(--color-ambar);
   box-shadow: 0 0 8px var(--color-ambar);
 }
-.chip-violeta {
-  --chip-color: var(--color-violeta-texto);
-  --chip-fondo: var(--color-violeta-suave);
+.chip-acento {
+  --chip-color: var(--color-acento-texto);
+  --chip-fondo: var(--color-acento-suave);
 }
 .chip-vivo .chip-punto {
   animation: latido var(--dur-pulso) var(--curva-suave) infinite;
@@ -651,12 +651,12 @@ input {
     box-shadow var(--dur-media) var(--curva-salida);
 }
 .campo-input:hover {
-  border-color: var(--color-violeta);
+  border-color: var(--color-acento);
 }
 .campo-input:focus-visible {
   outline: none;
-  border-color: var(--color-violeta);
-  box-shadow: var(--sombra-hundida), 0 0 0 3px var(--color-violeta-suave);
+  border-color: var(--color-acento);
+  box-shadow: var(--sombra-hundida), 0 0 0 3px var(--color-acento-suave);
 }
 
 /* ============================================================= mensaje */
@@ -688,8 +688,8 @@ input {
   --mensaje-fondo: var(--color-aviso-suave);
 }
 .mensaje-info {
-  --mensaje-color: var(--color-violeta);
-  --mensaje-fondo: var(--color-violeta-suave);
+  --mensaje-color: var(--color-acento);
+  --mensaje-fondo: var(--color-acento-suave);
 }
 
 /* =============================================================== marca */

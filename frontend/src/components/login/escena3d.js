@@ -73,7 +73,7 @@ function modeloBombilla() {
   const grupo = new THREE.Group()
 
   const vidrio = new THREE.MeshPhysicalMaterial({
-    color: 0xb9b2cc, // apagado: vidrio humo; al encender lo tiñe la emisión ámbar
+    color: 0xbdbcc2, // apagado: vidrio humo; al encender lo tiñe la emisión ámbar
     roughness: 0.1,
     transmission: 1,
     thickness: 0.18,
@@ -98,7 +98,7 @@ function modeloBombilla() {
     32,
   )
   grupo.add(new THREE.Mesh(tallo, soporte))
-  const varilla = new THREE.MeshStandardMaterial({ color: 0x8a8399, metalness: 1, roughness: 0.35 })
+  const varilla = new THREE.MeshStandardMaterial({ color: 0x8c8b92, metalness: 1, roughness: 0.35 })
   grupo.add(tubo([-0.04, -0.4, 0], [-0.3, 0.02, 0], 0.008, varilla))
   grupo.add(tubo([0.04, -0.4, 0], [0.3, 0.02, 0], 0.008, varilla))
 
@@ -111,7 +111,7 @@ function modeloBombilla() {
   grupo.add(new THREE.Mesh(new THREE.TubeGeometry(curvaFilamento(), 700, 0.0065, 6), filamento))
 
   // Casquillo: cuello de grafito, rosca metálica, aislante negro y contacto de latón.
-  const grafito = new THREE.MeshStandardMaterial({ color: 0x2a2439, metalness: 0.6, roughness: 0.35 })
+  const grafito = new THREE.MeshStandardMaterial({ color: 0x2b2b2f, metalness: 0.6, roughness: 0.35 })
   const cuello = new THREE.LatheGeometry(
     [
       [0.4, -1.1],
@@ -122,9 +122,9 @@ function modeloBombilla() {
     64,
   )
   grupo.add(new THREE.Mesh(cuello, grafito))
-  const metal = new THREE.MeshStandardMaterial({ color: 0xcbc5d8, metalness: 1, roughness: 0.28 })
+  const metal = new THREE.MeshStandardMaterial({ color: 0xc9c8cd, metalness: 1, roughness: 0.28 })
   grupo.add(new THREE.Mesh(new THREE.LatheGeometry(perfilRosca(), 64), metal))
-  const aislante = new THREE.MeshStandardMaterial({ color: 0x0b0912, roughness: 0.25 })
+  const aislante = new THREE.MeshStandardMaterial({ color: 0x0e0e10, roughness: 0.25 })
   const piezaAislante = new THREE.LatheGeometry(
     [
       [0.4, -1.78],
@@ -173,12 +173,12 @@ export function crearEscena(contenedor, { reducido = false, leerApunte = () => (
 
   const camara = new THREE.PerspectiveCamera(26, 1, 0.1, 50)
 
-  // Luz del sistema: arriba a la izquierda; contraluz violeta abajo a la derecha.
-  escena.add(new THREE.HemisphereLight(0xb8a4ff, 0x0b0912, 0.5))
+  // Luz del sistema: arriba a la izquierda; contraluz neutro detrás a la derecha.
+  escena.add(new THREE.HemisphereLight(0xd9d8de, 0x0e0e10, 0.45))
   const clave = new THREE.DirectionalLight(0xffffff, 1.4)
   clave.position.set(-4, 5, 5)
   escena.add(clave)
-  const contraluz = new THREE.DirectionalLight(0x9474ff, 2.6)
+  const contraluz = new THREE.DirectionalLight(0xc9c8d0, 1.4)
   contraluz.position.set(4, -1, -4)
   escena.add(contraluz)
 

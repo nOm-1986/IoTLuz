@@ -27,7 +27,7 @@ function conHuecos(puntos) {
 }
 
 /**
- * Colores de la gráfica leídos de los tokens. La luz medida es ámbar; el umbral (un ajuste) es violeta.
+ * Colores de la gráfica leídos de los tokens. La luz medida es ámbar; el umbral (un ajuste) es acento.
  * Se vuelven a leer cuando cambia el tema (atributo data-tema de <html>).
  */
 function useColores() {
@@ -36,7 +36,7 @@ function useColores() {
     const v = (n) => css.getPropertyValue(n).trim()
     return {
       luz: v('--color-ambar'),
-      umbral: v('--color-violeta-texto'),
+      umbral: v('--color-acento-texto'),
       rejilla: v('--color-borde'),
       eje: v('--color-texto-3'),
       cursor: v('--color-texto-3'),

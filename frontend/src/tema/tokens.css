@@ -1,9 +1,12 @@
 /*
  * IoTLuz: tokens del sistema visual (único archivo de tokens).
  *
- * Mundo: una sala de noche. El fondo es oscuridad violeta; el violeta es la
- * interfaz (controles, foco, selección) y el ámbar es LUZ: solo se usa para lo
- * que está encendido o para la luz medida. Si algo es ámbar, hay luz.
+ * Mundo: un aparato de grafito. Las superficies son planas y neutras; la
+ * profundidad la dan sombras suaves y un filo de luz de 1 px, no degradados.
+ * El acento de interfaz es aluminio (claro sobre grafito) y nunca compite con la
+ * luz. El ámbar es LUZ: solo para lo que está encendido o la luz medida, y es lo
+ * único saturado y con resplandor. Si algo es ámbar, hay luz. Los LED de estado
+ * (verde, rojo) también son luces y pueden brillar.
  *
  * Tema: oscuro por defecto. public/tema-inicial.js pone data-tema="claro" u
  * "oscuro" en <html> antes de pintar (preferencia guardada o la del sistema).
@@ -37,6 +40,7 @@
   --interlinea: 1.5;
   --tracking-titular: -0.03em;
   --tracking-cifra: -0.02em;
+  --tracking-rotulo: 0.18em; /* rótulos pequeños en mayúsculas, como la serigrafía de un aparato */
 
   /* ---- Espaciado (base 4 px) ----------------------------------------- */
   --esp-1: 0.25rem; /* 4 */
@@ -51,11 +55,11 @@
   --esp-10: 4rem; /* 64 */
   --esp-11: 6rem; /* 96 */
 
-  /* ---- Radios -------------------------------------------------------- */
-  --radio-xs: 6px;
-  --radio-sm: 10px;
-  --radio-md: 14px;
-  --radio-lg: 22px; /* tarjetas */
+  /* ---- Radios: más contenidos, de pieza mecanizada ------------------ */
+  --radio-xs: 4px;
+  --radio-sm: 8px;
+  --radio-md: 10px;
+  --radio-lg: 16px; /* tarjetas */
   --radio-pildora: 999px;
 
   /* ---- Tamaños de control -------------------------------------------- */
@@ -74,23 +78,24 @@
   --curva-salida: cubic-bezier(0.16, 1, 0.3, 1);
   --curva-suave: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ---- Color: oscuro ("noche") --------------------------------------- */
-  --color-fondo: #0b0912;
-  --color-superficie: #15121e;
-  --color-superficie-2: #1c1828; /* pistas, inputs, contenedores de segmentos */
-  --color-superficie-3: #272138; /* hover y elementos sobre superficie-2 */
-  --color-borde: #2b2541; /* decorativo */
-  --color-borde-control: #6c628f; /* límite de inputs y controles (≥3:1) */
+  /* ---- Color: oscuro (grafito) --------------------------------------- */
+  --color-fondo: #1b1b1e;
+  --color-superficie: #252528;
+  --color-superficie-2: #1e1e21; /* hundido: pistas, inputs, carriles */
+  --color-superficie-3: #303034; /* sobresale: hover, controles */
+  --color-borde: #34343a; /* decorativo */
+  --color-borde-control: #75747c; /* límite de inputs y controles (≥3:1) */
 
-  --color-texto: #f4f1fb;
-  --color-texto-2: #bcb4d0;
-  --color-texto-3: #958daf;
+  --color-texto: #ecebef;
+  --color-texto-2: #b4b3ba;
+  --color-texto-3: #9a99a1;
 
-  --color-violeta: #9474ff; /* rellenos, pistas activas, foco */
-  --color-violeta-boton: #6c46ea; /* fondo de botón con texto blanco */
-  --color-violeta-texto: #b8a4ff; /* violeta como texto sobre oscuro */
-  --color-violeta-suave: rgb(148 116 255 / 0.16);
-  --color-sobre-violeta: #ffffff;
+  /* Acento de interfaz: aluminio. Selección, foco, rellenos de controles. */
+  --color-acento: #dedce3;
+  --color-acento-boton: #dedce3; /* fondo del botón principal */
+  --color-acento-texto: #f4f3f6;
+  --color-acento-suave: rgb(236 235 239 / 0.08);
+  --color-sobre-acento: #19191c;
 
   --color-ambar: #ffb547; /* la luz */
   --color-ambar-texto: #ffc777;
@@ -98,100 +103,87 @@
   --color-sobre-ambar: #2b1800;
 
   --color-ok: #52d690;
-  --color-ok-suave: rgb(82 214 144 / 0.13);
+  --color-ok-suave: rgb(82 214 144 / 0.12);
   --color-mal: #ff7183;
-  --color-mal-suave: rgb(255 113 131 / 0.14);
+  --color-mal-suave: rgb(255 113 131 / 0.13);
   --color-aviso: #ff9a6b;
-  --color-aviso-suave: rgb(255 154 107 / 0.14);
+  --color-aviso-suave: rgb(255 154 107 / 0.13);
 
-  --color-seleccion: rgb(148 116 255 / 0.38);
+  --color-seleccion: rgb(255 255 255 / 0.2);
 
-  /* Fondo: oscuridad con un resplandor violeta lejano, como luz de ventana. */
-  --fondo-pagina:
-    radial-gradient(120% 70% at 85% -10%, rgb(108 70 234 / 0.22), transparent 60%),
-    radial-gradient(90% 60% at -10% 110%, rgb(108 70 234 / 0.1), transparent 55%),
-    var(--color-fondo);
+  --fondo-pagina: var(--color-fondo);
 
-  /* ---- Relieve (3D suave) -------------------------------------------- */
-  /* Una sola luz, arriba a la izquierda: todo lo que sobresale tiene el filo
-     claro arriba-izquierda y la sombra abajo-derecha; lo hundido, al revés. */
-  --relieve-tarjeta: linear-gradient(145deg, #211c30 0%, #110e18 100%);
-  --relieve-control: linear-gradient(145deg, #312a44 0%, #15111d 100%);
-  --relieve-control-hover: linear-gradient(145deg, #3a3250 0%, #1a1623 100%);
-  --relieve-hundido: linear-gradient(145deg, #0b0911 0%, #1d1828 100%);
-  --relieve-perilla: radial-gradient(circle at 35% 30%, #ffffff 0%, #e4dcff 45%, #a995f0 100%);
-  --relieve-perilla-apagada: radial-gradient(circle at 35% 30%, #c6bedc 0%, #8a82a3 60%, #5e5775 100%);
-  --relieve-violeta: linear-gradient(160deg, #7d56fb 0%, #6c46ea 55%, #5733d0 100%);
-  --relieve-ambar: linear-gradient(160deg, #ffd27f 0%, #ffb547 55%, #f09a1c 100%);
+  /* ---- Superficies (planas; antes eran degradados) ------------------- */
+  --relieve-tarjeta: var(--color-superficie);
+  --relieve-control: var(--color-superficie-3);
+  --relieve-control-hover: #38383d;
+  --relieve-hundido: var(--color-superficie-2);
+  --relieve-perilla: #e6e4ea;
+  --relieve-perilla-apagada: #8d8c94;
+  --relieve-acento: var(--color-acento-boton);
+  --relieve-ambar: var(--color-ambar);
 
-  /* ---- Sombras y brillos --------------------------------------------- */
+  /* ---- Sombras: suaves, una luz desde arriba ------------------------- */
   --sombra-tarjeta:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 0.1),
-    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.5),
-    16px 22px 40px rgb(0 0 0 / 0.75),
-    6px 8px 12px rgb(0 0 0 / 0.4),
-    -10px -10px 28px rgb(150 125 235 / 0.1);
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    0 1px 2px rgb(0 0 0 / 0.28),
+    0 8px 24px rgb(0 0 0 / 0.22);
   --sombra-elevada:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 0.12),
-    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.5),
-    22px 32px 60px rgb(0 0 0 / 0.8),
-    8px 10px 16px rgb(0 0 0 / 0.45),
-    -12px -12px 32px rgb(150 125 235 / 0.12);
-  /* Controles que sobresalen (botones, discos de icono, pulgares). */
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 2px 4px rgb(0 0 0 / 0.28),
+    0 18px 44px rgb(0 0 0 / 0.32);
+  /* Controles que sobresalen (botones, discos de icono). */
   --sombra-relieve:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 0.14),
-    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.45),
-    8px 11px 20px rgb(0 0 0 / 0.7),
-    3px 4px 6px rgb(0 0 0 / 0.4),
-    -5px -5px 14px rgb(160 135 245 / 0.12);
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 1px 2px rgb(0 0 0 / 0.32),
+    0 3px 8px rgb(0 0 0 / 0.2);
   /* El mismo control al pulsarlo: se hunde. */
-  --sombra-presionada:
-    inset 6px 6px 12px rgb(0 0 0 / 0.75),
-    inset -4px -4px 10px rgb(160 135 245 / 0.1);
+  --sombra-presionada: inset 0 2px 5px rgb(0 0 0 / 0.4);
   --sombra-hundida:
-    inset 4px 4px 9px rgb(0 0 0 / 0.75),
-    inset -3px -3px 7px rgb(160 135 245 / 0.12);
+    inset 0 2px 4px rgb(0 0 0 / 0.38),
+    inset 0 -1px 0 rgb(255 255 255 / 0.04);
   --sombra-pulgar:
-    inset -2px -3px 4px rgb(60 30 140 / 0.35),
-    4px 6px 10px rgb(0 0 0 / 0.65),
-    1px 2px 3px rgb(0 0 0 / 0.4);
-  /* Brillo especular de los botones de color (violeta y ámbar). */
-  --filo-color: inset 0 1.5px 0 rgb(255 255 255 / 0.38), inset 0 -3px 6px rgb(0 0 0 / 0.3);
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 3px 8px rgb(0 0 0 / 0.25);
+  /* Filo del botón claro: un brillo de 1 px arriba. */
+  --filo-color: inset 0 1px 0 rgb(255 255 255 / 0.6);
 
-  --brillo-violeta: 0 6px 22px -6px rgb(148 116 255 / 0.7), 0 0 0 1px rgb(148 116 255 / 0.35);
-  --brillo-violeta-suave: 0 4px 18px -8px rgb(148 116 255 / 0.55);
-  --brillo-ambar: 0 8px 30px -6px rgb(255 181 71 / 0.65), 0 0 0 1px rgb(255 181 71 / 0.4);
+  /* ---- Brillos: solo lo que emite luz -------------------------------- */
+  --brillo-acento: 0 0 0 1px rgb(255 255 255 / 0.1);
+  --brillo-acento-suave: 0 0 0 0 transparent;
+  --brillo-ambar:
+    0 0 0 1px rgb(255 181 71 / 0.5),
+    0 0 20px -2px rgb(255 181 71 / 0.65);
   --brillo-ambar-tarjeta:
-    inset 1.5px 1.5px 0 rgb(255 214 150 / 0.2),
-    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.5),
-    16px 22px 40px rgb(0 0 0 / 0.75),
-    6px 8px 12px rgb(0 0 0 / 0.4),
-    0 24px 60px -20px rgb(255 160 40 / 0.45),
-    -10px -10px 28px rgb(255 181 71 / 0.1);
-  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 181 71 / 0.2), transparent 65%);
-  --resplandor-violeta: radial-gradient(80% 90% at 85% 0%, rgb(148 116 255 / 0.16), transparent 65%);
+    inset 0 1px 0 rgb(255 214 150 / 0.1),
+    0 1px 2px rgb(0 0 0 / 0.28),
+    0 8px 24px rgb(0 0 0 / 0.22),
+    0 0 48px -10px rgb(255 160 40 / 0.4);
+  /* La luz encendida sí se derrama sobre la superficie. */
+  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 181 71 / 0.16), transparent 65%);
+  --resplandor-acento: none;
 }
 
-/* ---- Color: claro ("día") -------------------------------------------- */
+/* ---- Color: claro (aluminio) ----------------------------------------- */
 :root[data-tema='claro'] {
   color-scheme: light;
 
-  --color-fondo: #f5f2fc;
-  --color-superficie: #ffffff;
-  --color-superficie-2: #eee9fa;
-  --color-superficie-3: #e3dcf6;
-  --color-borde: #e4def3;
-  --color-borde-control: #8b82a8;
+  --color-fondo: #e7e6ea;
+  --color-superficie: #f3f2f5;
+  --color-superficie-2: #e1e0e4;
+  --color-superficie-3: #fbfbfc;
+  --color-borde: #d4d3d8;
+  --color-borde-control: #84838b;
 
-  --color-texto: #16121f;
-  --color-texto-2: #4b4462;
-  --color-texto-3: #625b7c;
+  --color-texto: #1a1a1d;
+  --color-texto-2: #47464d;
+  --color-texto-3: #626169;
 
-  --color-violeta: #6b45e9;
-  --color-violeta-boton: #5f38e0;
-  --color-violeta-texto: #5430d2;
-  --color-violeta-suave: rgb(107 69 233 / 0.1);
-  --color-sobre-violeta: #ffffff;
+  --color-acento: #2b2b2f;
+  --color-acento-boton: #2b2b2f;
+  --color-acento-texto: #1a1a1d;
+  --color-acento-suave: rgb(0 0 0 / 0.06);
+  --color-sobre-acento: #f3f2f5;
 
   --color-ambar: #f5a316;
   --color-ambar-texto: #8a5200;
@@ -205,61 +197,41 @@
   --color-aviso: #b14a17;
   --color-aviso-suave: rgb(177 74 23 / 0.1);
 
-  --color-seleccion: rgb(107 69 233 / 0.22);
+  --color-seleccion: rgb(0 0 0 / 0.12);
 
-  --fondo-pagina:
-    radial-gradient(120% 70% at 85% -10%, rgb(107 69 233 / 0.12), transparent 60%),
-    radial-gradient(90% 60% at -10% 110%, rgb(245 163 22 / 0.08), transparent 55%),
-    var(--color-fondo);
-
-  --relieve-tarjeta: linear-gradient(145deg, #ffffff 0%, #ebe6f7 100%);
-  --relieve-control: linear-gradient(145deg, #ffffff 0%, #e4ddf5 100%);
-  --relieve-control-hover: linear-gradient(145deg, #ffffff 0%, #ddd5f2 100%);
-  --relieve-hundido: linear-gradient(145deg, #dcd5ee 0%, #f4f1fc 100%);
-  --relieve-perilla: radial-gradient(circle at 35% 30%, #ffffff 0%, #f6f3ff 50%, #d9d0f5 100%);
-  --relieve-perilla-apagada: radial-gradient(circle at 35% 30%, #ffffff 0%, #ece8f6 55%, #c9c1de 100%);
-  --relieve-violeta: linear-gradient(160deg, #7c58f5 0%, #5f38e0 60%, #4e28c9 100%);
-  --relieve-ambar: linear-gradient(160deg, #ffcf70 0%, #f5a316 60%, #e08e00 100%);
+  --relieve-control-hover: #ffffff;
+  --relieve-perilla: #ffffff;
+  --relieve-perilla-apagada: #ffffff;
 
   --sombra-tarjeta:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
-    inset -1px -1px 0 rgb(70 45 150 / 0.08),
-    14px 20px 36px rgb(70 45 150 / 0.24),
-    5px 7px 10px rgb(70 45 150 / 0.1),
-    -12px -12px 28px rgb(255 255 255 / 1);
+    inset 0 1px 0 rgb(255 255 255 / 0.8),
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 8px 24px rgb(0 0 0 / 0.07);
   --sombra-elevada:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
-    inset -1px -1px 0 rgb(70 45 150 / 0.08),
-    20px 30px 56px rgb(70 45 150 / 0.3),
-    7px 9px 14px rgb(70 45 150 / 0.12),
-    -14px -14px 34px rgb(255 255 255 / 1);
+    inset 0 1px 0 rgb(255 255 255 / 0.8),
+    0 2px 4px rgb(0 0 0 / 0.06),
+    0 18px 44px rgb(0 0 0 / 0.1);
   --sombra-relieve:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
-    inset -1px -1px 0 rgb(70 45 150 / 0.1),
-    7px 10px 18px rgb(70 45 150 / 0.28),
-    2px 3px 5px rgb(70 45 150 / 0.12),
-    -6px -6px 14px rgb(255 255 255 / 1);
-  --sombra-presionada:
-    inset 6px 6px 12px rgb(70 45 150 / 0.28),
-    inset -5px -5px 10px rgb(255 255 255 / 1);
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 1px 2px rgb(0 0 0 / 0.1),
+    0 3px 8px rgb(0 0 0 / 0.06);
+  --sombra-presionada: inset 0 2px 4px rgb(0 0 0 / 0.12);
   --sombra-hundida:
-    inset 4px 4px 8px rgb(70 45 150 / 0.26),
-    inset -4px -4px 8px rgb(255 255 255 / 1);
+    inset 0 2px 3px rgb(0 0 0 / 0.1),
+    inset 0 -1px 0 rgb(255 255 255 / 0.7);
   --sombra-pulgar:
-    inset -2px -3px 4px rgb(70 45 150 / 0.2),
-    3px 5px 9px rgb(70 45 150 / 0.38),
-    1px 2px 3px rgb(70 45 150 / 0.2);
-  --filo-color: inset 0 1.5px 0 rgb(255 255 255 / 0.45), inset 0 -3px 6px rgb(0 0 0 / 0.2);
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 3px 8px rgb(0 0 0 / 0.1);
+  --filo-color: inset 0 1px 0 rgb(255 255 255 / 0.18);
 
-  --brillo-violeta: 0 6px 18px -6px rgb(107 69 233 / 0.55), 0 0 0 1px rgb(107 69 233 / 0.3);
-  --brillo-violeta-suave: 0 4px 14px -8px rgb(107 69 233 / 0.45);
-  --brillo-ambar: 0 8px 24px -6px rgb(245 163 22 / 0.55), 0 0 0 1px rgb(245 163 22 / 0.45);
+  --brillo-acento: 0 0 0 1px rgb(0 0 0 / 0.08);
+  --brillo-ambar:
+    0 0 0 1px rgb(200 120 0 / 0.5),
+    0 0 18px -2px rgb(245 163 22 / 0.55);
   --brillo-ambar-tarjeta:
-    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
-    14px 20px 36px rgb(70 45 150 / 0.2),
-    5px 7px 10px rgb(70 45 150 / 0.08),
-    0 24px 50px -20px rgb(245 150 0 / 0.5),
-    -12px -12px 28px rgb(255 255 255 / 1);
-  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 190 80 / 0.28), transparent 65%);
-  --resplandor-violeta: radial-gradient(80% 90% at 85% 0%, rgb(107 69 233 / 0.1), transparent 65%);
+    inset 0 1px 0 rgb(255 255 255 / 0.8),
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 8px 24px rgb(0 0 0 / 0.07),
+    0 0 48px -10px rgb(245 150 0 / 0.45);
+  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 190 80 / 0.22), transparent 65%);
 }

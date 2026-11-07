@@ -221,8 +221,8 @@ code {
   display: grid;
   place-items: end center;
   padding-bottom: var(--esp-1);
-  background: var(--color-violeta-suave);
-  box-shadow: inset 0 0 0 1px var(--color-violeta);
+  background: var(--color-acento-suave);
+  box-shadow: inset 0 0 0 1px var(--color-acento);
   font-size: var(--t-xs);
 }
 .mu-espacios,
@@ -243,7 +243,7 @@ code {
 .mu-espacios li span {
   height: 0.75rem;
   border-radius: var(--radio-xs);
-  background: var(--color-violeta);
+  background: var(--color-acento);
 }
 .mu-duraciones li {
   display: grid;

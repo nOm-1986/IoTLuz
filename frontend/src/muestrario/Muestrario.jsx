@@ -20,14 +20,14 @@ import { Boton, Chip, Deslizador, Disco, Interruptor, Marca, Segmentado, Tarjeta
 const COLORES = [
   {
     grupo: 'Superficies',
-    nota: 'Oscuridad con un tinte violeta. Cada nivel se separa por luz, no por bordes.',
+    nota: 'Grafito neutro y plano. Cada nivel se separa por sombra y un filo de luz, no por degradados.',
     tokens: ['fondo', 'superficie', 'superficie-2', 'superficie-3', 'borde', 'borde-control'],
   },
   { grupo: 'Texto', nota: 'Tres niveles; todos ≥ 4,5:1 sobre las superficies.', tokens: ['texto', 'texto-2', 'texto-3'] },
   {
-    grupo: 'Violeta · interfaz',
+    grupo: 'Aluminio · interfaz',
     nota: 'Controles, selección y foco. Nunca significa “encendido”.',
-    tokens: ['violeta', 'violeta-boton', 'violeta-texto', 'violeta-suave'],
+    tokens: ['acento', 'acento-boton', 'acento-texto', 'acento-suave'],
   },
   {
     grupo: 'Ámbar · luz',
@@ -48,6 +48,9 @@ const ESCALA = [
   ['--t-sm', 'Confirmado por el Arduino hace 4 s', 'Ayudas y metadatos'],
   ['--t-xs', '7/11 · 21:03:12', 'Marcas de tiempo'],
 ]
+
+// Fuera del componente: si se creara en cada render, el efecto de useValoresCss no pararía.
+const TOKENS_COLOR = COLORES.flatMap((g) => g.tokens.map((t) => `--color-${t}`))
 
 const RADIOS = ['--radio-xs', '--radio-sm', '--radio-md', '--radio-lg', '--radio-pildora']
 const ESPACIOS = ['--esp-1', '--esp-2', '--esp-3', '--esp-4', '--esp-6', '--esp-7', '--esp-9', '--esp-10']
@@ -198,8 +201,7 @@ function DemoSala() {
 /* -------------------------------------------------------------- página */
 export default function Muestrario() {
   const { preferencia, tema, elegir } = useTema()
-  const todos = COLORES.flatMap((g) => g.tokens.map((t) => `--color-${t}`))
-  const valores = useValoresCss(todos, tema)
+  const valores = useValoresCss(TOKENS_COLOR, tema)
 
   const [interruptores, setInterruptores] = useState({ a: false, b: true, c: true })
   const pendienteSw = useOrdenSimulada(false)
@@ -233,7 +235,7 @@ export default function Muestrario() {
       <main className="mu-contenido">
         <div className="mu-intro">
           <h1 className="mu-titular">
-            Violeta para la interfaz.
+            Grafito para la interfaz.
             <br />
             <span className="mu-titular-luz">Ámbar para la luz.</span>
           </h1>
@@ -316,9 +318,9 @@ export default function Muestrario() {
           </div>
         </Seccion>
 
-        <Seccion id="s-interruptor" titulo="Interruptor" descripcion="Violeta para ajustes; ámbar cuando lo que enciende es una luz.">
+        <Seccion id="s-interruptor" titulo="Interruptor" descripcion="Acento para ajustes; ámbar cuando lo que enciende es una luz.">
           <div className="mu-rejilla">
-            <Ejemplo titulo="Violeta">
+            <Ejemplo titulo="Acento">
               <Interruptor
                 etiqueta="Avisos"
                 marcado={interruptores.a}
@@ -387,7 +389,7 @@ export default function Muestrario() {
 
         <Seccion id="s-deslizador" titulo="Deslizador" descripcion="Relleno luminoso hasta el valor. Zona táctil de 44 px.">
           <div className="mu-rejilla mu-rejilla-2">
-            <Ejemplo titulo="Violeta · con iconos" ancho>
+            <Ejemplo titulo="Acento · con iconos" ancho>
               <Deslizador
                 etiqueta="Umbral de oscuridad"
                 valor={deslizador}
@@ -419,7 +421,7 @@ export default function Muestrario() {
             </Ejemplo>
             <Ejemplo titulo="Luz e interfaz">
               <Chip tono="ambar">Encendida</Chip>
-              <Chip tono="violeta">Automático</Chip>
+              <Chip tono="acento">Automático</Chip>
               <Chip>Apagada</Chip>
             </Ejemplo>
           </div>
@@ -428,14 +430,14 @@ export default function Muestrario() {
         <Seccion id="s-tarjeta" titulo="Tarjeta" descripcion="Superficie en relieve: luz desde arriba a la izquierda, sombra abajo a la derecha. Los discos de icono sobresalen; encendida = resplandor ámbar.">
           <div className="mu-tarjetas">
             <Tarjeta as="div">
-              <Disco icono={Wifi} tamano="sm" tono="violeta" />
+              <Disco icono={Wifi} tamano="sm" tono="acento" />
               <h3>Normal</h3>
               <p className="texto-2">Sobresale del fondo, con un filo de luz arriba.</p>
             </Tarjeta>
             <Tarjeta as="div" destacada>
-              <Disco icono={SunDim} tamano="sm" tono="violeta" />
+              <Disco icono={SunDim} tamano="sm" tono="acento" />
               <h3>Destacada</h3>
-              <p className="texto-2">Resplandor violeta: el bloque principal.</p>
+              <p className="texto-2">Resplandor acento: el bloque principal.</p>
             </Tarjeta>
             <Tarjeta as="div" encendida>
               <Disco icono={Lightbulb} tamano="sm" encendido />
@@ -443,7 +445,7 @@ export default function Muestrario() {
               <p className="texto-2">La luz está encendida.</p>
             </Tarjeta>
             <Tarjeta as="div" elevada compacta>
-              <Disco icono={Timer} tamano="sm" tono="violeta" />
+              <Disco icono={Timer} tamano="sm" tono="acento" />
               <h3>Elevada · compacta</h3>
               <p className="texto-2">Para elementos flotantes.</p>
             </Tarjeta>

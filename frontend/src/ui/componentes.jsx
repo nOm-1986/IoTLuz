@@ -5,7 +5,7 @@ import './ui.css'
 
 const clases = (...c) => c.filter(Boolean).join(' ')
 
-/** Superficie suave. `encendida` la ilumina en ámbar (luz encendida); `destacada`, en violeta. */
+/** Superficie suave. `encendida` la ilumina en ámbar (luz encendida); `destacada`, en acento. */
 export function Tarjeta({ as: Etiqueta = 'section', encendida, destacada, elevada, compacta, className, children, ...resto }) {
   return (
     <Etiqueta
@@ -24,14 +24,14 @@ export function Tarjeta({ as: Etiqueta = 'section', encendida, destacada, elevad
   )
 }
 
-/** Disco de icono en relieve. `encendido` lo ilumina en ámbar; `tono="violeta"` para iconos de interfaz. */
+/** Disco de icono en relieve. `encendido` lo ilumina en ámbar; `tono="acento"` para iconos de interfaz. */
 export function Disco({ icono: Icono, encendido, tono, tamano, className, ...resto }) {
   return (
     <div
       className={clases(
         'disco',
         tamano === 'sm' && 'disco-sm',
-        tono === 'violeta' && 'disco-violeta',
+        tono === 'acento' && 'disco-acento',
         encendido && 'disco-encendido',
         className,
       )}
@@ -206,7 +206,7 @@ export function Deslizador({
 }
 
 /**
- * Chip de estado. tono: 'ok' | 'mal' | 'aviso' | 'ambar' | 'violeta' | 'neutro'.
+ * Chip de estado. tono: 'ok' | 'mal' | 'aviso' | 'ambar' | 'acento' | 'neutro'.
  * `vivo` hace latir el punto (dato en directo). `icono` sustituye al punto.
  */
 export function Chip({ tono = 'neutro', icono: Icono, vivo, className, children, ...resto }) {

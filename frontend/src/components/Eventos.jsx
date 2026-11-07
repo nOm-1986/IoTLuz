@@ -13,7 +13,7 @@ const VALOR = {
 function aspecto(e) {
   if (e.tipo === 'estado') return e.valor === 'ON' ? [Lightbulb, 'luz'] : [LightbulbOff, 'neutro']
   if (e.tipo === 'conexion') return e.valor === 'en_linea' ? [Wifi, 'ok'] : [WifiOff, 'mal']
-  return [SlidersHorizontal, 'violeta']
+  return [SlidersHorizontal, 'acento']
 }
 
 export default function Eventos({ eventos, error }) {

@@ -37,7 +37,7 @@ export default function Sala({ token, s, deshabilitado }) {
       <div className="sala-cabecera">
         <Disco icono={Lightbulb} encendido={encendida} />
         {s?.modo && (
-          <Chip tono={s.modo === 'AUTO' ? 'violeta' : 'neutro'}>{NOMBRE_MODO[s.modo]}</Chip>
+          <Chip tono={s.modo === 'AUTO' ? 'acento' : 'neutro'}>{NOMBRE_MODO[s.modo]}</Chip>
         )}
       </div>
 

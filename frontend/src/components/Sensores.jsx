@@ -45,7 +45,7 @@ function Sensor({ id, icono, titulo, valor, unidad, pie, activo }) {
   return (
     <Tarjeta as="article" className="sensor" aria-labelledby={id}>
       <div className="sensor-cabecera">
-        <Disco icono={icono} tamano="sm" tono={activo ? 'violeta' : undefined} className={activo ? 'disco-activo' : ''} />
+        <Disco icono={icono} tamano="sm" tono={activo ? 'acento' : undefined} className={activo ? 'disco-activo' : ''} />
         <h3 id={id} className="sensor-titulo">
           {titulo}
         </h3>
