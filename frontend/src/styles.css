@@ -4,51 +4,88 @@
  */
 
 /* ================================================================ LOGIN */
+/* Un aparato: chasis en relieve con una "pantalla" biselada (la sala de noche) y el acceso. */
 .login {
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: var(--esp-4);
+  padding: var(--esp-3);
 }
-.login-marco {
-  width: min(72rem, 100%);
+.login-chasis {
+  width: min(74rem, 100%);
   display: grid;
-  overflow: hidden;
+  gap: var(--esp-3);
+  padding: var(--esp-3);
   border-radius: 28px;
   background: var(--relieve-tarjeta);
   box-shadow:
     var(--sombra-elevada),
-    inset 0 0 0 1px rgb(148 116 255 / 0.28);
+    inset 0 0 0 1px rgb(148 116 255 / 0.22);
 }
 @media (min-width: 56rem) {
   .login {
     padding: var(--esp-7);
   }
-  .login-marco {
-    grid-template-columns: 1.15fr 1fr;
-    min-height: min(44rem, calc(100dvh - 4rem));
+  .login-chasis {
+    grid-template-columns: 1.2fr 1fr;
+    min-height: min(46rem, calc(100dvh - 4rem));
   }
 }
 
-/* Escena: siempre de noche (también en el tema claro): es la sala con la luz encendida. */
+/* Pantalla: siempre de noche (también en el tema claro), con las esquinas biseladas. */
 .login-escena {
+  --bisel: 22px;
   position: relative;
   isolation: isolate;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: var(--esp-5);
-  padding: var(--esp-6);
+  gap: var(--esp-4);
+  padding: var(--esp-5);
   color: #f4f1fb;
+  clip-path: polygon(
+    var(--bisel) 0,
+    calc(100% - var(--bisel)) 0,
+    100% var(--bisel),
+    100% calc(100% - var(--bisel)),
+    calc(100% - var(--bisel)) 100%,
+    var(--bisel) 100%,
+    0 calc(100% - var(--bisel)),
+    0 var(--bisel)
+  );
   background:
-    radial-gradient(60% 50% at 50% 45%, rgb(255 181 71 / 0.16), transparent 70%),
-    radial-gradient(120% 80% at 100% 0%, rgb(108 70 234 / 0.35), transparent 60%),
-    linear-gradient(160deg, #1d1530 0%, #0d0a15 100%);
-  box-shadow: inset -1px 0 0 rgb(148 116 255 / 0.2);
+    radial-gradient(120% 80% at 100% 0%, rgb(108 70 234 / 0.32), transparent 60%),
+    linear-gradient(160deg, #1b1428 0%, #0b0911 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(148 116 255 / 0.16),
+    inset 8px 10px 28px rgb(0 0 0 / 0.65);
+}
+/* La sala se ilumina cuando el sensor enciende la luz. */
+.login-escena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(70% 55% at 50% 45%, rgb(255 181 71 / 0.26), transparent 72%);
+  opacity: 0;
+  transition: opacity 1400ms var(--curva-suave);
+}
+.login-escena[data-encendida]::before {
+  opacity: 1;
+  transition-duration: 500ms;
 }
 @media (min-width: 56rem) {
   .login-escena {
-    padding: var(--esp-8);
+    --bisel: 28px;
+    padding: var(--esp-7) var(--esp-8);
   }
+}
+
+.escena-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
 }
 .login-marca {
   display: flex;
@@ -61,55 +98,191 @@
 .login-marca .marca-casquillo {
   fill: #958daf;
 }
+
+/* Tira del sensor: LED, nombre y estado, como la serigrafía de un aparato. */
+.sensor-tira {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: 2rem;
+  padding: 0 var(--esp-3);
+  border-radius: var(--radio-pildora);
+  background: rgb(0 0 0 / 0.35);
+  box-shadow:
+    inset 2px 2px 5px rgb(0 0 0 / 0.6),
+    inset -1px -1px 0 rgb(255 255 255 / 0.05);
+  font-size: var(--t-xs);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #958daf;
+  white-space: nowrap;
+}
+.sensor-led {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #3a3350;
+  box-shadow: inset 1px 1px 2px rgb(0 0 0 / 0.6);
+  transition:
+    background-color var(--dur-media) var(--curva-suave),
+    box-shadow var(--dur-media) var(--curva-suave);
+}
+.sensor-nombre {
+  color: #bcb4d0;
+  font-weight: var(--peso-fuerte);
+}
+.sensor-estado {
+  font-variant-numeric: tabular-nums;
+}
+.login-escena[data-encendida] .sensor-led {
+  background: #ffb547;
+  box-shadow:
+    0 0 8px #ffb547,
+    0 0 2px #fff;
+}
+.login-escena[data-encendida] .sensor-estado {
+  color: #ffc777;
+}
+
+/* Zona de la luz: pozo hundido + halo + dial + bombilla 3D, en capas. */
 .escena-luz {
   position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 9rem;
+  justify-self: center;
+  align-self: center;
+  width: min(100%, 25rem);
+  aspect-ratio: 1;
+}
+.escena-luz::before,
+.escena-luz > * {
+  position: absolute;
+}
+.escena-luz::before {
+  content: '';
+  inset: 7%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.04), rgb(0 0 0 / 0.28));
+  box-shadow:
+    inset 8px 10px 22px rgb(0 0 0 / 0.6),
+    inset -5px -5px 14px rgb(150 125 235 / 0.1),
+    0 0 0 1px rgb(148 116 255 / 0.12);
 }
 .escena-halo {
-  position: absolute;
-  z-index: -1;
-  width: min(26rem, 90%);
-  aspect-ratio: 1;
+  inset: 6%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 190 90 / 0.55) 0%, rgb(255 160 40 / 0.18) 40%, transparent 70%);
-  filter: blur(8px);
-  animation: respirar 5s var(--curva-suave) infinite;
+  background: radial-gradient(circle, rgb(255 190 90 / 0.55) 0%, rgb(255 160 40 / 0.16) 42%, transparent 70%);
+  opacity: 0.1;
+  transition: opacity 1400ms var(--curva-suave);
 }
-.escena-bombilla {
-  height: clamp(8rem, 30vh, 19rem);
-  width: auto;
-  filter: drop-shadow(0 0 28px rgb(255 181 71 / 0.6));
+.login-escena[data-encendida] .escena-halo {
+  opacity: 1;
+  transition-duration: 450ms;
 }
-.escena-filamento {
-  fill: none;
-  stroke: #fffaf0;
-  stroke-width: 3;
-  stroke-linecap: round;
-  opacity: 0.85;
+/* Arranque: el halo y el LED dudan con el mismo ritmo que el filamento 3D (escena3d.js:
+   0,55 → 0,2 → 0,85 → 0,6 en 380 ms), para que luz, halo y LED se enciendan como una sola cosa. */
+@media (prefers-reduced-motion: no-preference) {
+  .login-escena[data-encendida] .escena-halo,
+  .login-escena[data-encendida] .sensor-led {
+    animation: arranque 380ms steps(1, end);
+  }
 }
-.escena-reflejo {
-  fill: #ffffff;
-  opacity: 0.35;
-}
-@keyframes respirar {
-  0%,
+@keyframes arranque {
+  0% {
+    opacity: 0.55;
+  }
+  24% {
+    opacity: 0.2;
+  }
+  45% {
+    opacity: 0.85;
+  }
+  68% {
+    opacity: 0.6;
+  }
   100% {
-    opacity: 0.8;
-    transform: scale(0.96);
-  }
-  50% {
     opacity: 1;
-    transform: scale(1.04);
   }
 }
+/* Movimiento reducido: sin parpadeo ni saltos de brillo; la luz entra y sale con un fundido corto
+   (la regla global de ui.css anula las transiciones, aquí se devuelve solo la opacidad). */
+@media (prefers-reduced-motion: reduce) {
+  .login-escena::before,
+  .escena-halo,
+  .dial-arco,
+  .bombilla-3d-lienzo {
+    transition: opacity 300ms ease !important;
+  }
+}
+.dial {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.dial-marcas line {
+  stroke: rgb(188 180 208 / 0.28);
+  stroke-width: 0.35;
+  stroke-linecap: round;
+}
+.dial-marcas .dial-marca-mayor {
+  stroke: rgb(188 180 208 / 0.6);
+  stroke-width: 0.55;
+}
+.dial-pista {
+  fill: none;
+  stroke: rgb(0 0 0 / 0.4);
+  stroke-width: 1.6;
+}
+.dial-arco {
+  fill: none;
+  stroke: #ffb547;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 1.5px rgb(255 181 71 / 0.9));
+  opacity: 0;
+  transition:
+    stroke-dashoffset 100ms linear,
+    opacity var(--dur-media) var(--curva-suave);
+}
+.login-escena[data-encendida] .dial-arco {
+  opacity: 1;
+}
+
+.bombilla-3d {
+  inset: 9%;
+}
+.bombilla-3d-lienzo {
+  position: absolute;
+  inset: 0;
+  transition: opacity 600ms var(--curva-suave);
+}
+.bombilla-3d[data-estado='cargando'] .bombilla-3d-lienzo {
+  opacity: 0;
+}
+.bombilla-3d-lienzo canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.bombilla-plana {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 74%;
+  transform: translate(-50%, -50%);
+  filter: grayscale(0.85) brightness(0.45);
+  transition: filter 600ms var(--curva-suave);
+}
+.bombilla-3d[data-encendida] .bombilla-plana {
+  filter: drop-shadow(0 0 24px rgb(255 181 71 / 0.6));
+}
+
 .login-texto {
   display: grid;
   gap: var(--esp-3);
 }
 .login-titular {
-  font-size: clamp(2rem, 2.6vw + 1rem, 3.25rem);
+  font-size: clamp(1.75rem, 2.2vw + 1rem, 3rem);
   font-weight: var(--peso-titular);
   line-height: var(--interlinea-titular);
   letter-spacing: var(--tracking-titular);
@@ -121,52 +294,76 @@
 .login-bajada {
   color: #bcb4d0;
   font-size: var(--t-md);
-  max-width: 28rem;
+  max-width: 30rem;
 }
+.login-pista {
+  font-size: var(--t-sm);
+  color: #958daf;
+}
+.pista-tactil {
+  display: none;
+}
+@media (hover: none) {
+  .pista-cursor {
+    display: none;
+  }
+  .pista-tactil {
+    display: inline;
+  }
+}
+/* Móvil: la escena se compacta (bombilla al lado del titular) para que el formulario quepa. */
 @media (max-width: 55.99rem) {
-  /* Móvil: la escena se vuelve una cabecera compacta, con la bombilla al lado del titular. */
   .login-escena {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
     align-items: center;
+    gap: var(--esp-3) var(--esp-4);
   }
-  .login-marca {
+  .escena-barra {
     grid-column: 1 / -1;
   }
   .escena-luz {
-    grid-column: 2;
-    grid-row: 2;
-    min-height: 0;
-  }
-  .escena-bombilla {
-    height: 7.5rem;
+    width: 9.5rem;
   }
   .login-texto {
-    grid-column: 1;
-    grid-row: 2;
+    gap: var(--esp-2);
   }
   .login-titular {
-    font-size: var(--t-xl);
+    font-size: var(--t-lg);
+    line-height: var(--interlinea-ajustada);
+    letter-spacing: -0.01em; /* a este tamaño, el espaciado negativo del titular grande aprieta demasiado */
   }
   .login-bajada {
-    font-size: var(--t-sm);
+    display: none;
+  }
+  .login-pista {
+    font-size: var(--t-xs);
   }
 }
 
+/* Acceso. */
 .login-acceso {
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: var(--esp-5);
-  padding: var(--esp-5) var(--esp-6) var(--esp-6);
+  padding: var(--esp-4) var(--esp-4) var(--esp-3);
 }
 @media (min-width: 56rem) {
   .login-acceso {
-    padding: var(--esp-6) var(--esp-8) var(--esp-7);
+    padding: var(--esp-5) var(--esp-7) var(--esp-4);
   }
 }
 .login-acceso-cabecera {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+}
+.rotulo {
+  font-size: var(--t-xs);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-texto-3);
 }
 .login-form {
   width: 100%;
@@ -191,8 +388,20 @@
   font-size: var(--t-md);
 }
 .login-pie {
-  font-size: var(--t-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-3);
   text-align: center;
+}
+/* Rejilla de puntos, como la de un altavoz. */
+.rejilla-puntos {
+  flex: none;
+  width: 2.25rem;
+  height: 0.75rem;
+  background-image: radial-gradient(circle, var(--color-texto-3) 1px, transparent 1.4px);
+  background-size: 6px 6px;
+  opacity: 0.5;
 }
 
 /* ================================================================ PANEL */
