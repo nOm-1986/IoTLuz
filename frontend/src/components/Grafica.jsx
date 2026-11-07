@@ -1,7 +1,9 @@
+import { Download } from 'lucide-react'
 import { memo, useEffect, useState } from 'react'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { descargarCsv, obtenerLecturas } from '../api.js'
 import { formatoFechaHora, formatoHora, formatoHoraSeg } from '../formato.js'
+import { Boton, Mensaje, Segmentado, Tarjeta } from '../ui/componentes.jsx'
 
 const VENTANAS = [
   { id: '30m', etiqueta: '30 min', minutos: 30, limite: 400 },
@@ -24,25 +26,28 @@ function conHuecos(puntos) {
   return salida
 }
 
-/** Colores de la gráfica leídos de las variables CSS (cambian con el modo claro/oscuro). */
+/**
+ * Colores de la gráfica leídos de los tokens. La luz medida es ámbar; el umbral (un ajuste) es violeta.
+ * Se vuelven a leer cuando cambia el tema (atributo data-tema de <html>).
+ */
 function useColores() {
   const leer = () => {
     const css = getComputedStyle(document.documentElement)
     const v = (n) => css.getPropertyValue(n).trim()
     return {
-      luz: v('--serie-1'),
-      umbral: v('--texto-secundario'),
-      rejilla: v('--rejilla'),
-      eje: v('--texto-tenue'),
-      cursor: v('--texto-tenue'),
+      luz: v('--color-ambar'),
+      umbral: v('--color-violeta-texto'),
+      rejilla: v('--color-borde'),
+      eje: v('--color-texto-3'),
+      cursor: v('--color-texto-3'),
+      superficie: v('--color-superficie'),
     }
   }
   const [colores, setColores] = useState(leer)
   useEffect(() => {
-    const mq = matchMedia('(prefers-color-scheme: dark)')
-    const cambiar = () => setColores(leer())
-    mq.addEventListener('change', cambiar)
-    return () => mq.removeEventListener('change', cambiar)
+    const obs = new MutationObserver(() => setColores(leer()))
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-tema'] })
+    return () => obs.disconnect()
   }, [])
   return colores
 }
@@ -60,7 +65,7 @@ function InfoPunto({ active, payload }) {
       <p>
         <span className="muestra muestra-umbral" /> Umbral <strong>{p.umbral}</strong>
       </p>
-      <p className="tenue">Lámpara {p.estado === 'ON' ? 'encendida' : 'apagada'}</p>
+      <p className="texto-3">Lámpara {p.estado === 'ON' ? 'encendida' : 'apagada'}</p>
     </div>
   )
 }
@@ -109,47 +114,51 @@ export default memo(function Grafica({ token }) {
   }
 
   return (
-    <section className="tarjeta" aria-labelledby="titulo-grafica">
-      <div className="tarjeta-cabecera">
-        <h2 id="titulo-grafica" className="titulo-tarjeta">Luz ambiente en el tiempo</h2>
-        <div className="acciones">
-          <div className="segmentado pequeno" role="group" aria-label="Ventana de tiempo">
-            {VENTANAS.map((v) => (
-              <button
-                key={v.id}
-                className={`segmento ${v.id === ventana.id ? 'activo' : ''}`}
-                aria-pressed={v.id === ventana.id}
-                onClick={() => setVentana(v)}
-              >
-                {v.etiqueta}
-              </button>
-            ))}
-          </div>
-          <button className="boton secundario" onClick={descargar} disabled={descargando}>
+    <Tarjeta className="grafica-tarjeta" aria-labelledby="titulo-grafica">
+      <div className="grafica-cabecera">
+        <div>
+          <h2 id="titulo-grafica" className="tarjeta-titulo">
+            Luz ambiente en el tiempo
+          </h2>
+          <ul className="leyenda" aria-label="Leyenda">
+            <li>
+              <span className="muestra muestra-luz" /> Luz medida
+            </li>
+            <li>
+              <span className="muestra muestra-umbral" /> Umbral
+            </li>
+          </ul>
+        </div>
+        <div className="grafica-acciones">
+          <Segmentado
+            variante="filtro"
+            etiqueta="Ventana de tiempo"
+            valor={ventana.id}
+            alCambiar={(id) => setVentana(VENTANAS.find((v) => v.id === id))}
+            opciones={VENTANAS.map((v) => ({ valor: v.id, texto: v.etiqueta }))}
+          />
+          <Boton variante="secundario" tamano="sm" icono={Download} cargando={descargando} onClick={descargar}>
             {descargando ? 'Descargando…' : 'Descargar CSV'}
-          </button>
+          </Boton>
         </div>
       </div>
 
-      <ul className="leyenda" aria-label="Leyenda">
-        <li>
-          <span className="muestra muestra-luz" /> Luz (LDR)
-        </li>
-        <li>
-          <span className="muestra muestra-umbral" /> Umbral
-        </li>
-      </ul>
-
-      {error && <p className="mensaje error">{error}</p>}
+      {error && <Mensaje tono="error">{error}</Mensaje>}
 
       <div className="grafica">
         {datos.length === 0 ? (
-          <p className="grafica-vacia tenue">
+          <p className="grafica-vacia texto-3">
             {cargando ? 'Cargando lecturas…' : 'No hay lecturas en esta ventana. Se guarda una cada 30 s mientras el Arduino está en línea.'}
           </p>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={datos} margin={{ top: 8, right: 12, bottom: 0, left: -8 }}>
+            <ComposedChart data={datos} margin={{ top: 8, right: 12, bottom: 0, left: -8 }}>
+              <defs>
+                <linearGradient id="relleno-luz" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor={colores.luz} stopOpacity={0.35} />
+                  <stop offset="100%" stopColor={colores.luz} stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid stroke={colores.rejilla} vertical={false} />
               <XAxis
                 dataKey="t"
@@ -183,17 +192,18 @@ export default memo(function Grafica({ token }) {
                 activeDot={false}
                 isAnimationActive={false}
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="luz"
                 name="Luz"
                 stroke={colores.luz}
-                strokeWidth={2}
+                strokeWidth={2.25}
+                fill="url(#relleno-luz)"
                 dot={false}
-                activeDot={{ r: 4, strokeWidth: 2, stroke: 'var(--superficie)' }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: colores.superficie, fill: colores.luz }}
                 isAnimationActive={false}
               />
-            </LineChart>
+            </ComposedChart>
           </ResponsiveContainer>
         )}
       </div>
@@ -227,6 +237,6 @@ export default memo(function Grafica({ token }) {
           </div>
         </details>
       )}
-    </section>
+    </Tarjeta>
   )
 })

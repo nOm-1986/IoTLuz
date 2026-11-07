@@ -1,0 +1,723 @@
+/*
+ * IoTLuz: base y componentes. Solo usa variables de tema/tokens.css.
+ * Regla de color: violeta = interfaz; ámbar = luz encendida o luz medida.
+ */
+
+/* ================================================================ base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--color-fondo);
+}
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--fondo-pagina);
+  background-attachment: fixed;
+  color: var(--color-texto);
+  font-family: var(--fuente);
+  font-size: var(--t-base);
+  font-weight: var(--peso-normal);
+  line-height: var(--interlinea);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: var(--peso-titular);
+  line-height: var(--interlinea-ajustada);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+::selection {
+  background: var(--color-seleccion);
+  color: var(--color-texto);
+}
+:focus-visible {
+  outline: 2px solid var(--color-violeta);
+  outline-offset: 3px;
+}
+a {
+  color: var(--color-violeta-texto);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-superficie-3) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-superficie-3);
+  border-radius: var(--radio-pildora);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+input {
+  caret-color: var(--color-violeta);
+}
+
+/* Utilidades de texto */
+.cifra {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-cifra);
+}
+.texto-2 {
+  color: var(--color-texto-2);
+}
+.texto-3 {
+  color: var(--color-texto-3);
+}
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================= tarjeta */
+.tarjeta {
+  position: relative;
+  isolation: isolate;
+  background: var(--relieve-tarjeta);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-tarjeta);
+  padding: var(--esp-6);
+  transition:
+    box-shadow var(--dur-encendido) var(--curva-salida),
+    background-color var(--dur-media) var(--curva-suave);
+}
+.tarjeta::before {
+  /* Resplandor interior: transparente salvo en las variantes. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--resplandor-violeta);
+  opacity: 0;
+  transition: opacity var(--dur-encendido) var(--curva-salida);
+  pointer-events: none;
+}
+.tarjeta-destacada::before {
+  opacity: 1;
+}
+.tarjeta-encendida {
+  box-shadow: var(--brillo-ambar-tarjeta);
+}
+.tarjeta-encendida::before {
+  background: var(--resplandor-ambar);
+  opacity: 1;
+}
+.tarjeta-elevada {
+  box-shadow: var(--sombra-elevada);
+}
+.tarjeta-compacta {
+  padding: var(--esp-5);
+  border-radius: var(--radio-md);
+}
+
+/* =============================================================== botón */
+.boton {
+  --boton-alto: var(--alto-control);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: var(--boton-alto);
+  padding: 0 var(--esp-5);
+  border-radius: var(--radio-pildora);
+  border: 1px solid transparent;
+  font-size: var(--t-base);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-rapida) var(--curva-suave),
+    border-color var(--dur-rapida) var(--curva-suave),
+    box-shadow var(--dur-media) var(--curva-salida),
+    transform var(--dur-instante) var(--curva-suave);
+}
+.boton svg {
+  flex: none;
+}
+.boton:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+.boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.boton-sm {
+  --boton-alto: var(--alto-control-sm);
+  padding: 0 var(--esp-4);
+  font-size: var(--t-sm);
+}
+.boton-ancho {
+  width: 100%;
+}
+
+.boton-primario {
+  background: var(--relieve-violeta);
+  color: var(--color-sobre-violeta);
+  box-shadow: var(--filo-color), var(--sombra-relieve), var(--brillo-violeta-suave);
+}
+.boton-primario:hover:not(:disabled) {
+  box-shadow: var(--filo-color), var(--sombra-relieve), var(--brillo-violeta);
+}
+.boton-primario:active:not(:disabled) {
+  box-shadow: inset 0 3px 8px rgb(0 0 0 / 0.35), var(--brillo-violeta-suave);
+}
+
+/* Secundario: sobresale de la superficie y se hunde al pulsarlo. */
+.boton-secundario {
+  background: var(--relieve-control);
+  color: var(--color-texto);
+  border-color: var(--color-borde);
+  box-shadow: var(--sombra-relieve);
+}
+.boton-secundario:hover:not(:disabled) {
+  background: var(--relieve-control-hover);
+  border-color: var(--color-borde-control);
+}
+.boton-secundario:active:not(:disabled) {
+  background: var(--relieve-hundido);
+  box-shadow: var(--sombra-presionada);
+}
+
+/* Fantasma: plano en reposo; al pasar por encima asoma el relieve. */
+.boton-fantasma {
+  background: transparent;
+  color: var(--color-texto-2);
+}
+.boton-fantasma:hover:not(:disabled) {
+  background: var(--relieve-control);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-relieve);
+}
+.boton-fantasma:active:not(:disabled) {
+  background: var(--relieve-hundido);
+  box-shadow: var(--sombra-presionada);
+}
+
+/* Solo icono: disco redondo, como los botones de las referencias. */
+.boton-icono {
+  padding: 0;
+  width: var(--boton-alto);
+  border-radius: 50%;
+}
+.boton-icono.boton-secundario {
+  border-color: transparent;
+}
+
+.boton-cargando {
+  cursor: progress;
+}
+.boton-cargando svg {
+  animation: girar 0.9s linear infinite;
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================================== interruptor */
+.interruptor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-3);
+  min-height: var(--alto-control);
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.interruptor:disabled {
+  cursor: not-allowed;
+}
+.interruptor-etiqueta {
+  font-weight: var(--peso-medio);
+}
+.interruptor-pista {
+  --pista-color: var(--relieve-violeta);
+  --pista-brillo: var(--brillo-violeta);
+  --perilla-on: var(--relieve-perilla);
+  position: relative;
+  flex: none;
+  width: 3.5rem;
+  height: 2rem;
+  border-radius: var(--radio-pildora);
+  background: var(--relieve-hundido);
+  box-shadow: var(--sombra-hundida), inset 0 0 0 1px var(--color-borde-control);
+  transition:
+    background-color var(--dur-media) var(--curva-suave),
+    box-shadow var(--dur-media) var(--curva-salida);
+}
+.interruptor-ambar .interruptor-pista {
+  --pista-color: var(--relieve-ambar);
+  --pista-brillo: var(--brillo-ambar);
+  --perilla-on: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff3dc 50%, #f6c873 100%);
+}
+.interruptor-perilla {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--relieve-perilla-apagada);
+  box-shadow: var(--sombra-pulgar);
+  transition:
+    transform var(--dur-media) var(--curva-salida),
+    box-shadow var(--dur-media) var(--curva-salida);
+}
+/* Encendido: la pista sigue hundida, pero llena de color y con brillo. */
+.interruptor[aria-checked='true'] .interruptor-pista {
+  background: var(--pista-color);
+  box-shadow: inset 2px 2px 5px rgb(0 0 0 / 0.35), var(--pista-brillo);
+}
+.interruptor[aria-checked='true'] .interruptor-perilla {
+  transform: translateX(1.5rem);
+  background: var(--perilla-on);
+  box-shadow: var(--sombra-pulgar), 0 0 10px rgb(255 255 255 / 0.35);
+}
+.interruptor:disabled .interruptor-pista,
+.interruptor:disabled .interruptor-etiqueta {
+  opacity: 0.5;
+}
+/* Pendiente de confirmación: la pista late hasta que el dispositivo responde. */
+.interruptor[data-pendiente='true'] .interruptor-pista {
+  animation: latido var(--dur-pulso) var(--curva-suave) infinite;
+}
+
+/* ======================================================= segmentado */
+.segmentado {
+  --seg-alto: var(--alto-control);
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--esp-1);
+  padding: var(--esp-1);
+  border-radius: var(--radio-pildora);
+  background: var(--relieve-hundido);
+  box-shadow: var(--sombra-hundida);
+}
+.segmentado-ancho {
+  display: grid;
+  width: 100%;
+}
+.segmento {
+  position: relative;
+  min-height: var(--seg-alto);
+  min-width: 4.5rem;
+  padding: 0 var(--esp-4);
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--color-texto-2);
+  font-weight: var(--peso-fuerte);
+  font-size: var(--t-base);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-media) var(--curva-salida),
+    color var(--dur-rapida) var(--curva-suave),
+    box-shadow var(--dur-media) var(--curva-salida);
+}
+.segmento:hover:not(:disabled):not([aria-pressed='true']) {
+  color: var(--color-texto);
+  background: var(--relieve-control);
+  box-shadow: var(--sombra-relieve);
+}
+/* El segmento elegido sobresale del carril hundido. */
+.segmento[aria-pressed='true'] {
+  background: var(--relieve-violeta);
+  color: var(--color-sobre-violeta);
+  box-shadow: var(--filo-color), var(--brillo-violeta);
+}
+/* El segmento "encendido" (ON confirmado) usa la luz, no la interfaz. */
+.segmento[aria-pressed='true'][data-luz='true'] {
+  background: var(--relieve-ambar);
+  color: var(--color-sobre-ambar);
+  box-shadow: var(--filo-color), var(--brillo-ambar);
+}
+.segmento[data-pendiente='true'] {
+  color: var(--color-texto);
+  box-shadow: inset 0 0 0 1.5px var(--color-violeta);
+  animation: latido var(--dur-pulso) var(--curva-suave) infinite;
+}
+.segmento:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Variante filtro: cambia la vista, no el dispositivo. Más ligera y sin brillo. */
+.segmentado-filtro {
+  --seg-alto: var(--alto-control-sm);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-borde);
+}
+.segmentado-filtro .segmento {
+  min-width: 3.5rem;
+  padding: 0 var(--esp-3);
+  font-size: var(--t-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0;
+}
+.segmentado-filtro .segmento[aria-pressed='true'] {
+  background: var(--relieve-control);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-relieve);
+}
+
+/* ========================================================== deslizador */
+.deslizador {
+  display: grid;
+  gap: var(--esp-2);
+}
+.deslizador-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--esp-3);
+}
+.deslizador-etiqueta {
+  font-weight: var(--peso-medio);
+}
+.deslizador-valor {
+  font-size: var(--t-lg);
+  font-weight: var(--peso-fuerte);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-cifra);
+}
+.deslizador-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  color: var(--color-texto-3);
+}
+.deslizador-fila svg {
+  flex: none;
+}
+.deslizador input[type='range'] {
+  --relleno: var(--color-violeta);
+  --relleno-brillo: rgb(148 116 255 / 0.55);
+  --pct: 50%;
+  flex: 1;
+  width: 100%;
+  height: var(--alto-control); /* zona táctil de 44 px; la pista se dibuja más fina */
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.deslizador-ambar input[type='range'] {
+  --relleno: var(--color-ambar);
+  --relleno-brillo: rgb(255 181 71 / 0.6);
+}
+.deslizador input[type='range']:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.deslizador input[type='range']:focus-visible {
+  outline: none;
+}
+/* Pista con relleno luminoso hasta el valor (Chromium/Safari). */
+.deslizador input[type='range']::-webkit-slider-runnable-track {
+  height: var(--pista-alto);
+  border-radius: var(--radio-pildora);
+  background:
+    linear-gradient(var(--relleno), var(--relleno)) 0 / var(--pct) 100% no-repeat,
+    var(--relieve-hundido);
+  box-shadow: var(--sombra-hundida), 0 0 14px -2px var(--relleno-brillo);
+}
+.deslizador input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: var(--pulgar);
+  height: var(--pulgar);
+  margin-top: calc((var(--pista-alto) - var(--pulgar)) / 2);
+  border-radius: 50%;
+  /* Pulgar en relieve con el núcleo del color del relleno. */
+  background:
+    radial-gradient(circle, var(--relleno) 0 28%, transparent 31%),
+    var(--relieve-perilla);
+  border: 0;
+  box-shadow: var(--sombra-pulgar), 0 0 12px -2px var(--relleno-brillo);
+  transition:
+    box-shadow var(--dur-media) var(--curva-salida),
+    transform var(--dur-rapida) var(--curva-salida);
+}
+.deslizador input[type='range']:hover::-webkit-slider-thumb {
+  box-shadow: var(--sombra-pulgar), 0 0 0 6px var(--color-violeta-suave);
+}
+.deslizador input[type='range']:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.deslizador input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow: var(--sombra-pulgar), 0 0 0 4px var(--color-fondo), 0 0 0 6px var(--color-violeta);
+}
+/* Firefox */
+.deslizador input[type='range']::-moz-range-track {
+  height: var(--pista-alto);
+  border-radius: var(--radio-pildora);
+  background: var(--relieve-hundido);
+  box-shadow: var(--sombra-hundida);
+}
+.deslizador input[type='range']::-moz-range-progress {
+  height: var(--pista-alto);
+  border-radius: var(--radio-pildora);
+  background: var(--relleno);
+  box-shadow: 0 0 14px -2px var(--relleno-brillo);
+}
+.deslizador input[type='range']::-moz-range-thumb {
+  width: var(--pulgar);
+  height: var(--pulgar);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--relleno) 0 28%, transparent 31%),
+    var(--relieve-perilla);
+  border: 0;
+  box-shadow: var(--sombra-pulgar), 0 0 12px -2px var(--relleno-brillo);
+}
+.deslizador input[type='range']:focus-visible::-moz-range-thumb {
+  box-shadow: var(--sombra-pulgar), 0 0 0 4px var(--color-fondo), 0 0 0 6px var(--color-violeta);
+}
+/* En claro, el ámbar sobre la pista clara no llega a 3:1: el pulgar lleva un aro oscuro. */
+:root[data-tema='claro'] .deslizador-ambar input[type='range']::-webkit-slider-thumb {
+  box-shadow: var(--sombra-pulgar), inset 0 0 0 2px var(--color-ambar-texto);
+}
+:root[data-tema='claro'] .deslizador-ambar input[type='range']::-moz-range-thumb {
+  box-shadow: var(--sombra-pulgar), inset 0 0 0 2px var(--color-ambar-texto);
+}
+.deslizador-pie {
+  font-size: var(--t-sm);
+  color: var(--color-texto-3);
+}
+
+/* =============================================================== disco */
+/* Disco de icono en relieve (como los iconos redondos de las referencias). */
+.disco {
+  --disco-tam: 3.5rem;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--disco-tam);
+  height: var(--disco-tam);
+  border-radius: 50%;
+  background: var(--relieve-control);
+  color: var(--color-texto-3);
+  box-shadow: var(--sombra-relieve);
+  transition:
+    color var(--dur-encendido) var(--curva-salida),
+    box-shadow var(--dur-encendido) var(--curva-salida);
+}
+.disco-sm {
+  --disco-tam: 2.75rem;
+}
+.disco-violeta {
+  color: var(--color-violeta-texto);
+}
+/* Encendido: el icono se vuelve luz y el disco irradia ámbar. */
+.disco-encendido {
+  color: var(--color-ambar);
+  box-shadow:
+    var(--sombra-relieve),
+    inset 0 0 18px rgb(255 181 71 / 0.18),
+    0 0 40px 2px rgb(255 181 71 / 0.3);
+}
+.disco-encendido svg {
+  filter: drop-shadow(0 0 6px rgb(255 181 71 / 0.7));
+}
+:root[data-tema='claro'] .disco-encendido {
+  color: var(--color-ambar-texto);
+}
+
+/* ================================================================ chip */
+.chip {
+  --chip-color: var(--color-texto-2);
+  --chip-fondo: var(--color-superficie-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: 1.75rem;
+  padding: 0 var(--esp-3);
+  border-radius: var(--radio-pildora);
+  background: var(--chip-fondo);
+  color: var(--chip-color);
+  font-size: var(--t-sm);
+  font-weight: var(--peso-medio);
+  white-space: nowrap;
+}
+.chip svg {
+  flex: none;
+}
+.chip-punto {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+.chip-ok {
+  --chip-color: var(--color-ok);
+  --chip-fondo: var(--color-ok-suave);
+}
+.chip-mal {
+  --chip-color: var(--color-mal);
+  --chip-fondo: var(--color-mal-suave);
+}
+/* Mal: el punto es un cuadrado, para no depender solo del color. */
+.chip-mal .chip-punto {
+  border-radius: 1px;
+}
+.chip-aviso {
+  --chip-color: var(--color-aviso);
+  --chip-fondo: var(--color-aviso-suave);
+}
+.chip-ambar {
+  --chip-color: var(--color-ambar-texto);
+  --chip-fondo: var(--color-ambar-suave);
+}
+.chip-ambar .chip-punto {
+  background: var(--color-ambar);
+  box-shadow: 0 0 8px var(--color-ambar);
+}
+.chip-violeta {
+  --chip-color: var(--color-violeta-texto);
+  --chip-fondo: var(--color-violeta-suave);
+}
+.chip-vivo .chip-punto {
+  animation: latido var(--dur-pulso) var(--curva-suave) infinite;
+}
+
+/* =============================================================== campo */
+.campo {
+  display: grid;
+  gap: var(--esp-2);
+}
+.campo-etiqueta {
+  font-size: var(--t-sm);
+  font-weight: var(--peso-medio);
+  color: var(--color-texto-2);
+}
+/* Hundido en la superficie, con un límite visible (≥3:1) para no depender de la sombra. */
+.campo-input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0 var(--esp-5);
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-md);
+  background: var(--relieve-hundido);
+  box-shadow: var(--sombra-hundida);
+  font-size: var(--t-md);
+  transition:
+    border-color var(--dur-rapida) var(--curva-suave),
+    box-shadow var(--dur-media) var(--curva-salida);
+}
+.campo-input:hover {
+  border-color: var(--color-violeta);
+}
+.campo-input:focus-visible {
+  outline: none;
+  border-color: var(--color-violeta);
+  box-shadow: var(--sombra-hundida), 0 0 0 3px var(--color-violeta-suave);
+}
+
+/* ============================================================= mensaje */
+.mensaje {
+  --mensaje-color: var(--color-texto-2);
+  --mensaje-fondo: var(--color-superficie-2);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: var(--radio-md);
+  background: var(--mensaje-fondo);
+  color: var(--color-texto);
+  font-size: var(--t-sm);
+  line-height: var(--interlinea);
+  box-shadow: inset 3px 0 0 var(--mensaje-color);
+}
+.mensaje svg {
+  flex: none;
+  margin-top: 0.1em;
+  color: var(--mensaje-color);
+}
+.mensaje-error {
+  --mensaje-color: var(--color-mal);
+  --mensaje-fondo: var(--color-mal-suave);
+}
+.mensaje-aviso {
+  --mensaje-color: var(--color-aviso);
+  --mensaje-fondo: var(--color-aviso-suave);
+}
+.mensaje-info {
+  --mensaje-color: var(--color-violeta);
+  --mensaje-fondo: var(--color-violeta-suave);
+}
+
+/* =============================================================== marca */
+.marca-luz {
+  fill: var(--color-ambar);
+  filter: drop-shadow(0 0 6px rgb(255 181 71 / 0.7));
+}
+.marca-casquillo {
+  fill: var(--color-texto-3);
+}
+
+/* ============================================================ motion */
+@keyframes latido {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,265 @@
+/*
+ * IoTLuz: tokens del sistema visual (único archivo de tokens).
+ *
+ * Mundo: una sala de noche. El fondo es oscuridad violeta; el violeta es la
+ * interfaz (controles, foco, selección) y el ámbar es LUZ: solo se usa para lo
+ * que está encendido o para la luz medida. Si algo es ámbar, hay luz.
+ *
+ * Tema: oscuro por defecto. public/tema-inicial.js pone data-tema="claro" u
+ * "oscuro" en <html> antes de pintar (preferencia guardada o la del sistema).
+ */
+
+@import '@fontsource-variable/urbanist';
+
+:root {
+  color-scheme: dark;
+
+  /* ---- Tipografía ---------------------------------------------------- */
+  --fuente: 'Urbanist Variable', 'Urbanist', ui-sans-serif, system-ui, sans-serif;
+
+  --t-xs: 0.75rem; /* 12 */
+  --t-sm: 0.875rem; /* 14 */
+  --t-base: 1rem; /* 16 */
+  --t-md: 1.125rem; /* 18 */
+  --t-lg: 1.375rem; /* 22 */
+  --t-xl: 1.75rem; /* 28 */
+  --t-2xl: 2.25rem; /* 36 */
+  --t-3xl: clamp(2.5rem, 4vw + 1rem, 3.5rem); /* 40–56: cifras protagonistas */
+  --t-4xl: clamp(3rem, 6vw + 1rem, 5rem); /* 48–80: titulares */
+
+  --peso-normal: 450;
+  --peso-medio: 550;
+  --peso-fuerte: 650;
+  --peso-titular: 600;
+
+  --interlinea-titular: 1.02;
+  --interlinea-ajustada: 1.2;
+  --interlinea: 1.5;
+  --tracking-titular: -0.03em;
+  --tracking-cifra: -0.02em;
+
+  /* ---- Espaciado (base 4 px) ----------------------------------------- */
+  --esp-1: 0.25rem; /* 4 */
+  --esp-2: 0.5rem; /* 8 */
+  --esp-3: 0.75rem; /* 12 */
+  --esp-4: 1rem; /* 16 */
+  --esp-5: 1.25rem; /* 20 */
+  --esp-6: 1.5rem; /* 24 */
+  --esp-7: 2rem; /* 32 */
+  --esp-8: 2.5rem; /* 40 */
+  --esp-9: 3rem; /* 48 */
+  --esp-10: 4rem; /* 64 */
+  --esp-11: 6rem; /* 96 */
+
+  /* ---- Radios -------------------------------------------------------- */
+  --radio-xs: 6px;
+  --radio-sm: 10px;
+  --radio-md: 14px;
+  --radio-lg: 22px; /* tarjetas */
+  --radio-pildora: 999px;
+
+  /* ---- Tamaños de control -------------------------------------------- */
+  --alto-control: 2.75rem; /* 44: objetivo táctil */
+  --alto-control-sm: 2.25rem; /* 36: solo filtros secundarios */
+  --pista-alto: 0.5rem;
+  --pulgar: 1.375rem;
+
+  /* ---- Movimiento ---------------------------------------------------- */
+  --dur-instante: 90ms;
+  --dur-rapida: 160ms;
+  --dur-media: 260ms;
+  --dur-lenta: 480ms;
+  --dur-encendido: 900ms; /* la luz tarda un poco en "calentar" */
+  --dur-pulso: 1600ms;
+  --curva-salida: cubic-bezier(0.16, 1, 0.3, 1);
+  --curva-suave: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---- Color: oscuro ("noche") --------------------------------------- */
+  --color-fondo: #0b0912;
+  --color-superficie: #15121e;
+  --color-superficie-2: #1c1828; /* pistas, inputs, contenedores de segmentos */
+  --color-superficie-3: #272138; /* hover y elementos sobre superficie-2 */
+  --color-borde: #2b2541; /* decorativo */
+  --color-borde-control: #6c628f; /* límite de inputs y controles (≥3:1) */
+
+  --color-texto: #f4f1fb;
+  --color-texto-2: #bcb4d0;
+  --color-texto-3: #958daf;
+
+  --color-violeta: #9474ff; /* rellenos, pistas activas, foco */
+  --color-violeta-boton: #6c46ea; /* fondo de botón con texto blanco */
+  --color-violeta-texto: #b8a4ff; /* violeta como texto sobre oscuro */
+  --color-violeta-suave: rgb(148 116 255 / 0.16);
+  --color-sobre-violeta: #ffffff;
+
+  --color-ambar: #ffb547; /* la luz */
+  --color-ambar-texto: #ffc777;
+  --color-ambar-suave: rgb(255 181 71 / 0.14);
+  --color-sobre-ambar: #2b1800;
+
+  --color-ok: #52d690;
+  --color-ok-suave: rgb(82 214 144 / 0.13);
+  --color-mal: #ff7183;
+  --color-mal-suave: rgb(255 113 131 / 0.14);
+  --color-aviso: #ff9a6b;
+  --color-aviso-suave: rgb(255 154 107 / 0.14);
+
+  --color-seleccion: rgb(148 116 255 / 0.38);
+
+  /* Fondo: oscuridad con un resplandor violeta lejano, como luz de ventana. */
+  --fondo-pagina:
+    radial-gradient(120% 70% at 85% -10%, rgb(108 70 234 / 0.22), transparent 60%),
+    radial-gradient(90% 60% at -10% 110%, rgb(108 70 234 / 0.1), transparent 55%),
+    var(--color-fondo);
+
+  /* ---- Relieve (3D suave) -------------------------------------------- */
+  /* Una sola luz, arriba a la izquierda: todo lo que sobresale tiene el filo
+     claro arriba-izquierda y la sombra abajo-derecha; lo hundido, al revés. */
+  --relieve-tarjeta: linear-gradient(145deg, #211c30 0%, #110e18 100%);
+  --relieve-control: linear-gradient(145deg, #312a44 0%, #15111d 100%);
+  --relieve-control-hover: linear-gradient(145deg, #3a3250 0%, #1a1623 100%);
+  --relieve-hundido: linear-gradient(145deg, #0b0911 0%, #1d1828 100%);
+  --relieve-perilla: radial-gradient(circle at 35% 30%, #ffffff 0%, #e4dcff 45%, #a995f0 100%);
+  --relieve-perilla-apagada: radial-gradient(circle at 35% 30%, #c6bedc 0%, #8a82a3 60%, #5e5775 100%);
+  --relieve-violeta: linear-gradient(160deg, #7d56fb 0%, #6c46ea 55%, #5733d0 100%);
+  --relieve-ambar: linear-gradient(160deg, #ffd27f 0%, #ffb547 55%, #f09a1c 100%);
+
+  /* ---- Sombras y brillos --------------------------------------------- */
+  --sombra-tarjeta:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 0.1),
+    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.5),
+    16px 22px 40px rgb(0 0 0 / 0.75),
+    6px 8px 12px rgb(0 0 0 / 0.4),
+    -10px -10px 28px rgb(150 125 235 / 0.1);
+  --sombra-elevada:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 0.12),
+    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.5),
+    22px 32px 60px rgb(0 0 0 / 0.8),
+    8px 10px 16px rgb(0 0 0 / 0.45),
+    -12px -12px 32px rgb(150 125 235 / 0.12);
+  /* Controles que sobresalen (botones, discos de icono, pulgares). */
+  --sombra-relieve:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 0.14),
+    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.45),
+    8px 11px 20px rgb(0 0 0 / 0.7),
+    3px 4px 6px rgb(0 0 0 / 0.4),
+    -5px -5px 14px rgb(160 135 245 / 0.12);
+  /* El mismo control al pulsarlo: se hunde. */
+  --sombra-presionada:
+    inset 6px 6px 12px rgb(0 0 0 / 0.75),
+    inset -4px -4px 10px rgb(160 135 245 / 0.1);
+  --sombra-hundida:
+    inset 4px 4px 9px rgb(0 0 0 / 0.75),
+    inset -3px -3px 7px rgb(160 135 245 / 0.12);
+  --sombra-pulgar:
+    inset -2px -3px 4px rgb(60 30 140 / 0.35),
+    4px 6px 10px rgb(0 0 0 / 0.65),
+    1px 2px 3px rgb(0 0 0 / 0.4);
+  /* Brillo especular de los botones de color (violeta y ámbar). */
+  --filo-color: inset 0 1.5px 0 rgb(255 255 255 / 0.38), inset 0 -3px 6px rgb(0 0 0 / 0.3);
+
+  --brillo-violeta: 0 6px 22px -6px rgb(148 116 255 / 0.7), 0 0 0 1px rgb(148 116 255 / 0.35);
+  --brillo-violeta-suave: 0 4px 18px -8px rgb(148 116 255 / 0.55);
+  --brillo-ambar: 0 8px 30px -6px rgb(255 181 71 / 0.65), 0 0 0 1px rgb(255 181 71 / 0.4);
+  --brillo-ambar-tarjeta:
+    inset 1.5px 1.5px 0 rgb(255 214 150 / 0.2),
+    inset -1.5px -1.5px 0 rgb(0 0 0 / 0.5),
+    16px 22px 40px rgb(0 0 0 / 0.75),
+    6px 8px 12px rgb(0 0 0 / 0.4),
+    0 24px 60px -20px rgb(255 160 40 / 0.45),
+    -10px -10px 28px rgb(255 181 71 / 0.1);
+  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 181 71 / 0.2), transparent 65%);
+  --resplandor-violeta: radial-gradient(80% 90% at 85% 0%, rgb(148 116 255 / 0.16), transparent 65%);
+}
+
+/* ---- Color: claro ("día") -------------------------------------------- */
+:root[data-tema='claro'] {
+  color-scheme: light;
+
+  --color-fondo: #f5f2fc;
+  --color-superficie: #ffffff;
+  --color-superficie-2: #eee9fa;
+  --color-superficie-3: #e3dcf6;
+  --color-borde: #e4def3;
+  --color-borde-control: #8b82a8;
+
+  --color-texto: #16121f;
+  --color-texto-2: #4b4462;
+  --color-texto-3: #625b7c;
+
+  --color-violeta: #6b45e9;
+  --color-violeta-boton: #5f38e0;
+  --color-violeta-texto: #5430d2;
+  --color-violeta-suave: rgb(107 69 233 / 0.1);
+  --color-sobre-violeta: #ffffff;
+
+  --color-ambar: #f5a316;
+  --color-ambar-texto: #8a5200;
+  --color-ambar-suave: rgb(245 163 22 / 0.16);
+  --color-sobre-ambar: #2b1800;
+
+  --color-ok: #127a45;
+  --color-ok-suave: rgb(18 122 69 / 0.1);
+  --color-mal: #c0283c;
+  --color-mal-suave: rgb(192 40 60 / 0.09);
+  --color-aviso: #b14a17;
+  --color-aviso-suave: rgb(177 74 23 / 0.1);
+
+  --color-seleccion: rgb(107 69 233 / 0.22);
+
+  --fondo-pagina:
+    radial-gradient(120% 70% at 85% -10%, rgb(107 69 233 / 0.12), transparent 60%),
+    radial-gradient(90% 60% at -10% 110%, rgb(245 163 22 / 0.08), transparent 55%),
+    var(--color-fondo);
+
+  --relieve-tarjeta: linear-gradient(145deg, #ffffff 0%, #ebe6f7 100%);
+  --relieve-control: linear-gradient(145deg, #ffffff 0%, #e4ddf5 100%);
+  --relieve-control-hover: linear-gradient(145deg, #ffffff 0%, #ddd5f2 100%);
+  --relieve-hundido: linear-gradient(145deg, #dcd5ee 0%, #f4f1fc 100%);
+  --relieve-perilla: radial-gradient(circle at 35% 30%, #ffffff 0%, #f6f3ff 50%, #d9d0f5 100%);
+  --relieve-perilla-apagada: radial-gradient(circle at 35% 30%, #ffffff 0%, #ece8f6 55%, #c9c1de 100%);
+  --relieve-violeta: linear-gradient(160deg, #7c58f5 0%, #5f38e0 60%, #4e28c9 100%);
+  --relieve-ambar: linear-gradient(160deg, #ffcf70 0%, #f5a316 60%, #e08e00 100%);
+
+  --sombra-tarjeta:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
+    inset -1px -1px 0 rgb(70 45 150 / 0.08),
+    14px 20px 36px rgb(70 45 150 / 0.24),
+    5px 7px 10px rgb(70 45 150 / 0.1),
+    -12px -12px 28px rgb(255 255 255 / 1);
+  --sombra-elevada:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
+    inset -1px -1px 0 rgb(70 45 150 / 0.08),
+    20px 30px 56px rgb(70 45 150 / 0.3),
+    7px 9px 14px rgb(70 45 150 / 0.12),
+    -14px -14px 34px rgb(255 255 255 / 1);
+  --sombra-relieve:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
+    inset -1px -1px 0 rgb(70 45 150 / 0.1),
+    7px 10px 18px rgb(70 45 150 / 0.28),
+    2px 3px 5px rgb(70 45 150 / 0.12),
+    -6px -6px 14px rgb(255 255 255 / 1);
+  --sombra-presionada:
+    inset 6px 6px 12px rgb(70 45 150 / 0.28),
+    inset -5px -5px 10px rgb(255 255 255 / 1);
+  --sombra-hundida:
+    inset 4px 4px 8px rgb(70 45 150 / 0.26),
+    inset -4px -4px 8px rgb(255 255 255 / 1);
+  --sombra-pulgar:
+    inset -2px -3px 4px rgb(70 45 150 / 0.2),
+    3px 5px 9px rgb(70 45 150 / 0.38),
+    1px 2px 3px rgb(70 45 150 / 0.2);
+  --filo-color: inset 0 1.5px 0 rgb(255 255 255 / 0.45), inset 0 -3px 6px rgb(0 0 0 / 0.2);
+
+  --brillo-violeta: 0 6px 18px -6px rgb(107 69 233 / 0.55), 0 0 0 1px rgb(107 69 233 / 0.3);
+  --brillo-violeta-suave: 0 4px 14px -8px rgb(107 69 233 / 0.45);
+  --brillo-ambar: 0 8px 24px -6px rgb(245 163 22 / 0.55), 0 0 0 1px rgb(245 163 22 / 0.45);
+  --brillo-ambar-tarjeta:
+    inset 1.5px 1.5px 0 rgb(255 255 255 / 1),
+    14px 20px 36px rgb(70 45 150 / 0.2),
+    5px 7px 10px rgb(70 45 150 / 0.08),
+    0 24px 50px -20px rgb(245 150 0 / 0.5),
+    -12px -12px 28px rgb(255 255 255 / 1);
+  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 190 80 / 0.28), transparent 65%);
+  --resplandor-violeta: radial-gradient(80% 90% at 85% 0%, rgb(107 69 233 / 0.1), transparent 65%);
+}
