@@ -20,8 +20,8 @@ const AROS = { Grande: 0.62, Media: 0.46, Peque: 0.31 } // radio en metros
 const EMISION = 4.2
 const FOCO = 42 // aro grande; los demás, en proporción a su área
 const HALO = 0.6
-const CHARCO = { oscuro: 0.09, claro: 0.018 }
-const CONO = { oscuro: 0.1, claro: 0.012 } // en una sala clara el haz apenas se ve, como en la realidad
+const CHARCO = { oscuro: 0.09, claro: 0.035 }
+const CONO = { oscuro: 0.1, claro: 0.03 } // en una sala clara el haz apenas se ve, como en la realidad
 
 // Luz nocturna: fría, entra por la esquina superior derecha de la página y está siempre (también
 // con la lámpara apagada). El haz y el polvo los pinta la página (luna.js); aquí, el foco real

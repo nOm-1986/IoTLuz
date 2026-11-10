@@ -1,14 +1,15 @@
 
 /* Maqueta D: rack de módulos. Material primero: aluminio granallado, goma, cristal negro. */
 .rp {
-  --fondo: #e2e2df;
-  --modulo: #cfcfcb;
+  /* Gris medio: sobre un fondo menos claro, la luz de la lámpara y la nocturna se notan. */
+  --fondo: hsl(60 3% 70%);
+  --modulo: hsl(60 3% 78%);
   --modulo-filo: rgb(255 255 255 / 0.75);
   --modulo-sombra: rgb(0 0 0 / 0.22);
   --serigrafia: #3c3d41;
-  --serigrafia-suave: #75767b;
+  --serigrafia-suave: hsl(230 3% 38%);
   --texto: #141416;
-  --hueco: #a9a9a5;
+  --hueco: hsl(60 3% 60%);
   --goma: #2b2b2f;
   --goma-filo: rgb(255 255 255 / 0.12);
   --naranja: #ff5a1f;
