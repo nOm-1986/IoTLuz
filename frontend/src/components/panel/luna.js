@@ -5,7 +5,8 @@
 // Va en su propio lienzo WebGL, fijo detrás del contenido. La escena 3D recibe la misma luz con
 // un foco de verdad (sombras); `alNube(g)` le pasa cuánto tapan las nubes en cada momento.
 const COLOR = [0.7, 0.82, 1.0]
-const FUERZA = { oscuro: 0.85, claro: 1.0 }
+// En claro no hay luz de fuera: es de día y la sala ya está iluminada.
+const FUERZA = { oscuro: 0.85, claro: 0 }
 const POLVO = 240
 
 const RUIDO = /* glsl */ `
@@ -174,6 +175,10 @@ export function crearLuna(lienzo, { objetivo, tema = 'claro', alNube = () => {} 
     gl.viewport(0, 0, W, H)
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT)
+    if (!fuerza) {
+      cuadro = 0 // nada que pintar ni animar hasta que vuelva el tema oscuro
+      return
+    }
 
     for (const p of [pHaz, pPolvo]) {
       gl.useProgram(p)

@@ -27,7 +27,7 @@ const CONO = { oscuro: 0.1, claro: 0.03 } // en una sala clara el haz apenas se 
 // con la lámpara apagada). El haz y el polvo los pinta la página (luna.js); aquí, el foco real
 // que proyecta las sombras de aros y cables, y que se apaga un poco cuando pasan nubes.
 const LUNA_COLOR = new THREE.Color(0.68, 0.8, 1.0)
-const LUNA = { oscuro: 70, claro: 26 }
+const LUNA = { oscuro: 70, claro: 0 } // en claro no hay luz de fuera
 
 const SOMBRA = { claro: 0.22, oscuro: 0.5 }
 const AMBIENTE = { claro: 1.1, oscuro: 0.18 }
