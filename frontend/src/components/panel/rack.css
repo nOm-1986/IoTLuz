@@ -1,0 +1,356 @@
+
+/* Maqueta D: rack de módulos. Material primero: aluminio granallado, goma, cristal negro. */
+.rp {
+  --fondo: #e2e2df;
+  --modulo: #cfcfcb;
+  --modulo-filo: rgb(255 255 255 / 0.75);
+  --modulo-sombra: rgb(0 0 0 / 0.22);
+  --serigrafia: #3c3d41;
+  --serigrafia-suave: #75767b;
+  --texto: #141416;
+  --hueco: #a9a9a5;
+  --goma: #2b2b2f;
+  --goma-filo: rgb(255 255 255 / 0.12);
+  --naranja: #ff5a1f;
+  --azul: #4ea4ff;
+  --verde: #3fdc95;
+  --grano-op: 0.11;
+  color-scheme: light;
+}
+:root[data-tema='oscuro'] .rp {
+  --fondo: #09090a;
+  --modulo: #1b1b1e;
+  --modulo-filo: rgb(255 255 255 / 0.07);
+  --modulo-sombra: rgb(0 0 0 / 0.7);
+  --serigrafia: #c9c9cc;
+  --serigrafia-suave: #78787e;
+  --texto: #efeee9;
+  --hueco: #0c0c0d;
+  --goma: #333338;
+  --goma-filo: rgb(255 255 255 / 0.1);
+  --grano-op: 0.2;
+  color-scheme: dark;
+}
+.rp * { box-sizing: border-box; margin: 0; }
+.rp {
+  min-height: 100dvh;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: 'Urbanist Variable', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.rp button { font: inherit; color: inherit; }
+
+/* ── Módulo: placa con grano de granallado, filo de luz arriba y tornillos ── */
+.rp .modulo {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 16px 18px 18px;
+  border-radius: 6px;
+  background: var(--modulo);
+  box-shadow:
+    inset 0 1px 0 var(--modulo-filo),
+    inset 0 -1px 0 rgb(0 0 0 / 0.12),
+    0 1px 1px var(--modulo-sombra),
+    0 6px 14px -6px var(--modulo-sombra);
+}
+.rp .modulo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: var(--grano-op);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1.6 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+.rp .modulo.naranja { --modulo: var(--naranja); --serigrafia: #1a0b05; --serigrafia-suave: rgb(26 11 5 / 0.6); }
+.rp .modulo .rk-tornillo {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, rgb(255 255 255 / 0.35), transparent 60%), var(--hueco);
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.45), 0 1px 0 var(--modulo-filo);
+}
+.rp .modulo .rk-tornillo::after {
+  content: '';
+  position: absolute;
+  inset: 3px 1.5px;
+  border-radius: 1px;
+  background: rgb(0 0 0 / 0.35);
+  rotate: var(--g, 30deg);
+}
+.rp .rk-tornillo.ai { top: 7px; left: 7px; } .rk-tornillo.ad { top: 7px; right: 7px; --g: -20deg; }
+.rp .rk-tornillo.bi { bottom: 7px; left: 7px; --g: 70deg; } .rk-tornillo.bd { bottom: 7px; right: 7px; --g: 10deg; }
+
+.rp .cabeza { display: flex; justify-content: space-between; align-items: baseline; padding: 0 6px; }
+.rp .serigrafia {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--serigrafia);
+}
+.rp .serigrafia.suave { color: var(--serigrafia-suave); }
+.rp .num { font-variant-numeric: tabular-nums; color: var(--serigrafia-suave); margin-right: 8px; }
+
+/* ── Pantalla: cristal negro hundido en la placa ── */
+.rp .rk-pantalla {
+  position: relative;
+  border-radius: 4px;
+  padding: 10px;
+  background: #050506;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.05),
+    inset 0 8px 16px rgb(0 0 0 / 0.6),
+    0 0 0 3px rgb(0 0 0 / 0.55),
+    0 1px 0 3px var(--modulo-filo);
+}
+.rp .rk-pantalla::after {
+  /* el reflejo del cristal: una franja muy tenue en diagonal */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, rgb(255 255 255 / 0.05) 0 30%, transparent 30.5%);
+  pointer-events: none;
+}
+.rp .rk-pantalla svg { display: block; width: 100%; height: auto; }
+.rp .rk-pantalla .luz { fill: #f3f2ee; }
+.rp .rk-pantalla .tenue { fill: #f3f2ee; opacity: 0.13; }
+.rp .rk-pantalla .nar { fill: var(--naranja); }
+.rp .rk-pantalla .azul { fill: var(--azul); }
+.rp .rk-pantalla .verde { fill: var(--verde); }
+.rp .rk-pantalla .roja { fill: #ff5468; }
+.rp .rk-pantalla .apagado { fill: #f3f2ee; opacity: 0.06; }
+.rp .rk-pantalla .luz, .rk-pantalla .nar, .rk-pantalla .azul, .rk-pantalla .verde { filter: drop-shadow(0 0 1.5px currentColor); }
+
+/* ── Tecla de goma con LED encima ── */
+.rp .teclas { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; }
+.rp .rk-tecla {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.rp .rk-tecla .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.35);
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.5);
+  transition: background 120ms, box-shadow 120ms;
+}
+.rp .rk-tecla[aria-pressed='true'] .led {
+  background: var(--naranja);
+  box-shadow: 0 0 0 1px rgb(255 200 170 / 0.4), 0 0 6px var(--naranja), 0 0 14px rgb(255 90 31 / 0.5);
+}
+.rp .rk-tecla .tapa {
+  width: 100%;
+  height: var(--alto-tecla, 52px);
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: var(--goma);
+  color: #e9e8e4;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  box-shadow:
+    inset 0 1px 0 var(--goma-filo),
+    inset 0 -2px 0 rgb(0 0 0 / 0.35),
+    0 0 0 3px var(--hueco),
+    0 4px 0 -1px rgb(0 0 0 / 0.35),
+    0 6px 10px -2px rgb(0 0 0 / 0.35);
+  translate: 0 0;
+  transition: translate 90ms cubic-bezier(0.3, 0.7, 0.4, 1), box-shadow 90ms;
+}
+.rp .rk-tecla.clara .tapa { background: #ecebe7; color: #1d1d20; --goma-filo: rgb(255 255 255 / 0.9); }
+.rp .rk-tecla.naranja .tapa { background: var(--naranja); color: #1a0b05; --goma-filo: rgb(255 255 255 / 0.45); }
+.rp .rk-tecla:active .tapa, .rp .rk-tecla.pulsada .tapa {
+  translate: 0 3px;
+  box-shadow:
+    inset 0 1px 0 var(--goma-filo),
+    inset 0 -1px 0 rgb(0 0 0 / 0.35),
+    0 0 0 3px var(--hueco),
+    0 1px 0 -1px rgb(0 0 0 / 0.35),
+    0 2px 3px -1px rgb(0 0 0 / 0.35);
+}
+.rp .rk-tecla:focus-visible .tapa { outline: 2px solid var(--naranja); outline-offset: 5px; }
+.rp .rk-tecla.chica { --alto-tecla: 30px; }
+.rp .rk-tecla.chica .tapa { font-size: 10px; }
+
+/* ── Perilla mecanizada: moleteado en el canto, cara con anillos de torno ── */
+.rp .perilla-zona { position: relative; display: grid; place-items: center; touch-action: none; cursor: grab; user-select: none; }
+.rp .perilla-zona:active { cursor: grabbing; }
+.rp .perilla-zona svg.marcas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rp .marcas .m { stroke: var(--serigrafia-suave); stroke-width: 1.5; stroke-linecap: round; }
+.rp .marcas .m.on { stroke: var(--naranja); }
+.rp .perilla {
+  position: relative;
+  width: 64%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, #8d8d8b 0deg 2deg, #d7d7d4 2deg 4deg);
+  box-shadow:
+    0 0 0 2px rgb(0 0 0 / 0.25),
+    0 3px 2px rgb(0 0 0 / 0.3),
+    0 12px 18px -6px rgb(0 0 0 / 0.45);
+  rotate: var(--angulo, 0deg);
+}
+.rp .perilla::before {
+  /* la cara: aluminio torneado, con el brillo que se queda quieto mientras gira */
+  content: '';
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+    conic-gradient(from calc(var(--angulo, 0deg) * -1 + 20deg), #e9e9e6, #a9a9a6 25%, #f4f4f2 45%, #9c9c99 70%, #e9e9e6);
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.7), inset 0 -2px 3px rgb(0 0 0 / 0.25), 0 0 0 1px rgb(0 0 0 / 0.2);
+}
+.rp .perilla::after {
+  content: '';
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  width: 4px;
+  height: 22%;
+  translate: -50% 0;
+  border-radius: 2px;
+  background: var(--naranja);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.15);
+}
+:root[data-tema='oscuro'] .rp .perilla { background: repeating-conic-gradient(from 0deg, #1d1d1f 0deg 2deg, #4a4a4f 2deg 4deg); }
+:root[data-tema='oscuro'] .rp .perilla::before {
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.04) 0 1px, transparent 1px 3px),
+    conic-gradient(from calc(var(--angulo, 0deg) * -1 + 20deg), #4b4b50, #1f1f22 25%, #5a5a60 45%, #1a1a1c 70%, #4b4b50);
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.2), inset 0 -2px 3px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(0 0 0 / 0.5);
+}
+
+/* ── Fader: ranura hundida, escala serigrafiada y capuchón de goma con estrías ── */
+.rp .fader { position: relative; height: 64px; touch-action: none; cursor: pointer; user-select: none; }
+.rp .fader .ranura {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 8px;
+  translate: 0 -50%;
+  border-radius: 4px;
+  background: #060607;
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.8), 0 1px 0 var(--modulo-filo);
+}
+.rp .fader .relleno { position: absolute; left: 3px; top: 3px; bottom: 3px; width: calc(var(--v) * (100% - 6px)); border-radius: 2px; background: var(--naranja); opacity: 0.85; }
+.rp .fader .escala { position: absolute; left: 0; right: 0; top: 0; height: 10px; display: flex; justify-content: space-between; padding: 0 11px; }
+.rp .fader .escala i { width: 1px; height: 6px; background: var(--serigrafia-suave); }
+.rp .fader .escala i:nth-child(5n + 1) { height: 10px; background: var(--serigrafia); }
+.rp .fader .capuchon {
+  position: absolute;
+  top: 50%;
+  left: calc(11px + var(--v) * (100% - 22px));
+  width: 22px;
+  height: 38px;
+  translate: -50% -50%;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 3px, rgb(0 0 0 / 0.28) 3px 4px) center / 60% 55% no-repeat,
+    var(--goma);
+  box-shadow:
+    inset 0 1px 0 var(--goma-filo),
+    inset 0 -2px 0 rgb(0 0 0 / 0.35),
+    0 2px 2px rgb(0 0 0 / 0.35),
+    0 8px 12px -4px rgb(0 0 0 / 0.4);
+}
+.rp .fader .capuchon::after { content: ''; position: absolute; left: 3px; right: 3px; top: 50%; height: 2px; translate: 0 -50%; background: var(--naranja); border-radius: 1px; }
+.rp .fader.animado .capuchon, .fader.animado .relleno { transition: left 420ms cubic-bezier(0.2, 1.3, 0.4, 1), width 420ms cubic-bezier(0.2, 1.3, 0.4, 1); }
+
+/* ── LED de estado ── */
+.rp .estado-led { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
+.rp .estado-led.ok { background: var(--verde); box-shadow: 0 0 6px var(--verde); }
+.rp .estado-led.mal { background: #ff5468; box-shadow: 0 0 6px #ff5468; animation: latido 1.6s steps(1) infinite; }
+@keyframes latido { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) {
+  .estado-led.mal { animation: none; }
+  .fader.animado .capuchon, .fader.animado .relleno { transition: none; }
+}
+.rp .nota { position: fixed; right: 14px; bottom: 10px; font-size: 11px; color: var(--serigrafia-suave); }
+
+/* ── Página del panel: el primer pliegue (lámpara + mandos) ocupa justo la ventana ── */
+.rp { min-height: 100dvh; }
+.rp .pagina { max-width: 1400px; margin: 0 auto; padding: 0 40px 80px; }
+.rp header { height: 64px; display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.rp .marca { font-size: 17px; font-weight: 650; letter-spacing: -0.02em; }
+.rp .marca span { color: var(--serigrafia-suave); font-weight: 500; margin-left: 10px; }
+.rp header .derecha { display: flex; align-items: center; gap: 22px; }
+.rp header .red { display: flex; gap: 16px; }
+.rp header .red div { display: flex; align-items: center; gap: 8px; }
+.rp header .teclas { width: 120px; }
+.rp .estado-led.neutro { background: var(--hueco); box-shadow: none; animation: none; }
+
+.rp .aviso { margin: 0 0 10px; padding: 9px 14px; border-radius: 6px; font-size: 13px; font-weight: 550; background: var(--modulo); color: var(--serigrafia); box-shadow: inset 0 1px 0 var(--modulo-filo); }
+.rp .aviso.error { color: #e0442e; }
+
+.rp .pliegue { height: calc(100svh - 64px - 28px); min-height: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.rp .con-aviso .pliegue { height: calc(100svh - 64px - 28px - 46px); }
+.rp .rk-lampara { position: relative; margin-left: -40px; -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); }
+.rp .rk-lampara canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+
+.rp .rack { display: grid; grid-template-columns: repeat(12, 1fr); gap: 7px; }
+.rp .principal { grid-template-rows: auto 1fr auto; }
+.rp .s12 { grid-column: span 12; } .rp .s8 { grid-column: span 8; } .rp .s6 { grid-column: span 6; } .rp .s4 { grid-column: span 4; }
+.rp .modulo.llena { display: grid; grid-template-rows: auto 1fr; }
+.rp .modulo.llena > :last-child { align-self: center; }
+.rp #modo { --alto-tecla: clamp(64px, 11svh, 120px); }
+.rp .perilla-zona { width: clamp(150px, 24svh, 240px); height: clamp(150px, 24svh, 240px); margin: 0 auto; }
+.rp .lectura { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; }
+.rp .lectura .rk-pantalla { padding: 7px 9px; }
+.rp .bloqueado { pointer-events: none; opacity: 0.5; filter: saturate(0.4); }
+.rp .esperando { animation: latido 1.2s ease-in-out infinite; }
+
+.rp .bajar { height: 28px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.rp .bajar svg { opacity: .5; }
+.rp .historial { margin-top: 48px; }
+.rp .historial .rk-pantalla svg { width: auto; max-width: 100%; height: 170px; }
+
+/* gráfica vectorial dentro del cristal */
+.rp #grafica { position: relative; height: 340px; }
+.rp #grafica svg { width: 100%; height: 100%; max-width: none; }
+.rp #grafica text { font: 500 10px/1 'Urbanist Variable', sans-serif; letter-spacing: .12em; fill: #f3f2ee; }
+.rp #grafica .eje { opacity: .38; }
+.rp #grafica .rejilla { stroke: #f3f2ee; stroke-opacity: .08; }
+.rp #grafica .linea { fill: none; stroke: #f3f2ee; stroke-width: 1.6; stroke-linejoin: round; }
+.rp #grafica .umbral { stroke: var(--naranja); stroke-width: 1.2; stroke-dasharray: 2 4; }
+.rp #grafica .franja { fill: var(--azul); fill-opacity: .1; }
+.rp #grafica .franja-base { fill: var(--azul); }
+.rp #grafica .cursor { stroke: #f3f2ee; stroke-opacity: .4; }
+.rp #grafica .nar { fill: var(--naranja); }
+.rp #grafica .azul-t { fill: var(--azul); }
+
+@media (max-width: 960px) {
+  .rp .pagina { padding: 0 14px 60px; }
+  .rp header .red { display: none; }
+  .rp .pliegue, .rp .con-aviso .pliegue { height: auto; min-height: 0; grid-template-columns: 1fr; gap: 0; }
+  .rp .rk-lampara { height: 300px; margin: -10px -14px 0; }
+  .rp .rack > * { grid-column: span 12; }
+  .rp .principal { grid-template-rows: none; }
+  .rp .bajar { display: none; }
+  .rp #grafica { height: 240px; }
+}
+.rp .visualmente-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Luz nocturna: capa fija detrás de todo el contenido; se suma a la página (screen). */
+.rp { position: relative; isolation: isolate; }
+.rp .rk-luna { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; mix-blend-mode: screen; }
+.rp .pagina > *, .rp .rk-lampara, .rp .principal { position: relative; z-index: 1; }

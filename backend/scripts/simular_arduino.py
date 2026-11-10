@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import math
 import random
 import ssl
 import sys
@@ -85,7 +86,9 @@ class ArduinoSimulado:
         """Avanza la simulación. Devuelve True si cambió el estado de la luz."""
         ahora = time.monotonic()
         with self.lock:
-            self.ldr = max(0, min(1023, self.ldr + random.randint(-60, 60)))
+            # Ciclo lento de ~3 min que cruza el umbral, para ver el modo AUTO encender y apagar.
+            ciclo = 450 + 300 * math.sin(ahora * 2 * math.pi / 180)
+            self.ldr = max(0, min(1023, round(ciclo + random.randint(-25, 25))))
             self.pir = random.random() < 0.3
             if self.pir:
                 self.ultimo_mov = ahora

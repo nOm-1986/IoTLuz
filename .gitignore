@@ -22,3 +22,6 @@ backups/
 Thumbs.db
 .vscode/
 .idea/
+
+# Referencias de terceros para el lienzo local (no se publican)
+docs/lienzo/assets/referencias/

@@ -159,9 +159,75 @@
     0 1px 2px rgb(0 0 0 / 0.28),
     0 8px 24px rgb(0 0 0 / 0.22),
     0 0 48px -10px rgb(255 160 40 / 0.4);
-  /* La luz encendida sí se derrama sobre la superficie. */
-  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 181 71 / 0.16), transparent 65%);
+  /* La luz encendida sí se derrama sobre la superficie. Las paradas siguen una curva suave
+     (no lineal) para que el borde del resplandor no se vea como un escalón. */
+  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 181 71 / 0.160) 0.0%, rgb(255 181 71 / 0.118) 12.3%, rgb(255 181 71 / 0.087) 22.1%, rgb(255 181 71 / 0.061) 30.5%, rgb(255 181 71 / 0.044) 36.7%, rgb(255 181 71 / 0.031) 42.2%, rgb(255 181 71 / 0.020) 47.4%, rgb(255 181 71 / 0.012) 52.1%, rgb(255 181 71 / 0.007) 56.0%, rgb(255 181 71 / 0.003) 59.1%, rgb(255 181 71 / 0.001) 61.9%, rgb(255 181 71 / 0.000) 63.8%, rgb(255 181 71 / 0.000) 65.0%);
   --resplandor-acento: none;
+
+  /* ---- Clay: superficies blandas e "infladas" -------------------------
+     Cada pieza lleva un brillo interior arriba a la izquierda, una sombra interior
+     abajo a la derecha (el volumen) y una sombra exterior. Cada parte se apila en
+     varias capas que doblan desplazamiento y desenfoque con la misma opacidad, así
+     la sombra se desvanece como una curva y no como un borde. Las hundidas invierten
+     el interior. */
+  --clay-radio-xl: 40px; /* chasis */
+  --clay-radio-lg: 30px; /* paneles dentro del chasis */
+  --clay-radio-md: 18px; /* campos */
+  --clay-elevada:
+    inset 1px 1px 1px rgb(255 255 255 / 0.04),
+    inset 3px 4px 8px rgb(255 255 255 / 0.035),
+    inset -2px -3px 6px rgb(0 0 0 / 0.12),
+    inset -6px -9px 18px rgb(0 0 0 / 0.14),
+    0 1px 2px rgb(0 0 0 / 0.103),
+    0 2px 4px rgb(0 0 0 / 0.103),
+    0 4px 8px rgb(0 0 0 / 0.103),
+    0 8px 16px rgb(0 0 0 / 0.103),
+    0 16px 32px rgb(0 0 0 / 0.103),
+    0 32px 64px rgb(0 0 0 / 0.103);
+  /* Piezas que sobresalen (discos, píldoras) y la misma pieza pulsada: mismas capas en el mismo
+     orden, para que la transición interpole cada sombra en vez de saltar. */
+  --clay-relieve:
+    inset 1px 1px 1px rgb(255 255 255 / 0.07),
+    inset 2px 3px 5px rgb(255 255 255 / 0.04),
+    inset -1px -2px 3px rgb(0 0 0 / 0.18),
+    inset -3px -5px 10px rgb(0 0 0 / 0.16),
+    0 1.5px 3px rgb(0 0 0 / 0.150),
+    0 3px 6px rgb(0 0 0 / 0.150),
+    0 6px 12px rgb(0 0 0 / 0.150),
+    0 12px 24px rgb(0 0 0 / 0.150);
+  --clay-relieve-pulsado:
+    inset 1px 2px 2px rgb(0 0 0 / 0.2),
+    inset 2px 4px 8px rgb(0 0 0 / 0.16),
+    inset -1px -1px 1px rgb(255 255 255 / 0.03),
+    inset -2px -2px 4px rgb(255 255 255 / 0.02),
+    0 0.188px 0.375px rgb(0 0 0 / 0.075),
+    0 0.375px 0.75px rgb(0 0 0 / 0.075),
+    0 0.75px 1.5px rgb(0 0 0 / 0.075),
+    0 1.5px 3px rgb(0 0 0 / 0.075);
+  --clay-hundida:
+    inset 1px 2px 2px rgb(0 0 0 / 0.22),
+    inset 3px 5px 8px rgb(0 0 0 / 0.16),
+    inset 6px 10px 18px rgb(0 0 0 / 0.1),
+    inset -1px -1px 1px rgb(255 255 255 / 0.04),
+    inset -3px -3px 6px rgb(255 255 255 / 0.02);
+  --clay-boton:
+    inset 0 1px 1px rgb(255 255 255 / 0.8),
+    inset 0 3px 6px rgb(255 255 255 / 0.35),
+    inset 0 -2px 4px rgb(0 0 0 / 0.1),
+    inset 0 -6px 12px rgb(0 0 0 / 0.08),
+    0 2px 4px rgb(0 0 0 / 0.175),
+    0 4px 8px rgb(0 0 0 / 0.175),
+    0 8px 16px rgb(0 0 0 / 0.175),
+    0 16px 32px rgb(0 0 0 / 0.175);
+  --clay-boton-pulsado:
+    inset 0 1px 2px rgb(0 0 0 / 0.18),
+    inset 0 3px 6px rgb(0 0 0 / 0.14),
+    inset 0 6px 12px rgb(0 0 0 / 0.08),
+    inset 0 -1px 1px rgb(255 255 255 / 0.3),
+    0 0.25px 0.5px rgb(0 0 0 / 0.087),
+    0 0.5px 1px rgb(0 0 0 / 0.087),
+    0 1px 2px rgb(0 0 0 / 0.087),
+    0 2px 4px rgb(0 0 0 / 0.087);
 }
 
 /* ---- Color: claro (aluminio) ----------------------------------------- */
@@ -233,5 +299,59 @@
     0 1px 2px rgb(0 0 0 / 0.06),
     0 8px 24px rgb(0 0 0 / 0.07),
     0 0 48px -10px rgb(245 150 0 / 0.45);
-  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 190 80 / 0.22), transparent 65%);
+  --resplandor-ambar: radial-gradient(80% 90% at 15% 0%, rgb(255 190 80 / 0.220) 0.0%, rgb(255 190 80 / 0.162) 12.3%, rgb(255 190 80 / 0.119) 22.1%, rgb(255 190 80 / 0.084) 30.5%, rgb(255 190 80 / 0.061) 36.7%, rgb(255 190 80 / 0.043) 42.2%, rgb(255 190 80 / 0.028) 47.4%, rgb(255 190 80 / 0.017) 52.1%, rgb(255 190 80 / 0.009) 56.0%, rgb(255 190 80 / 0.005) 59.1%, rgb(255 190 80 / 0.002) 61.9%, rgb(255 190 80 / 0.000) 63.8%, rgb(255 190 80 / 0.000) 65.0%);
+
+  --clay-elevada:
+    inset 1px 1px 1px rgb(255 255 255 / 0.9),
+    inset 4px 6px 12px rgb(255 255 255 / 0.6),
+    inset -2px -3px 6px rgb(52 48 66 / 0.03),
+    inset -8px -12px 24px rgb(52 48 66 / 0.04),
+    0 1px 2px rgb(52 48 66 / 0.050),
+    0 2px 4px rgb(52 48 66 / 0.050),
+    0 4px 8px rgb(52 48 66 / 0.050),
+    0 8px 16px rgb(52 48 66 / 0.050),
+    0 16px 32px rgb(52 48 66 / 0.050),
+    0 32px 64px rgb(52 48 66 / 0.050);
+  --clay-relieve:
+    inset 1px 1px 1px rgb(255 255 255 / 1),
+    inset 2px 3px 6px rgb(255 255 255 / 0.7),
+    inset -1px -2px 3px rgb(52 48 66 / 0.05),
+    inset -3px -5px 10px rgb(52 48 66 / 0.05),
+    0 1.5px 3px rgb(52 48 66 / 0.075),
+    0 3px 6px rgb(52 48 66 / 0.075),
+    0 6px 12px rgb(52 48 66 / 0.075),
+    0 12px 24px rgb(52 48 66 / 0.075);
+  --clay-relieve-pulsado:
+    inset 1px 2px 2px rgb(52 48 66 / 0.08),
+    inset 2px 4px 8px rgb(52 48 66 / 0.07),
+    inset -1px -1px 1px rgb(255 255 255 / 0.9),
+    inset -2px -2px 4px rgb(255 255 255 / 0.5),
+    0 0.188px 0.375px rgb(52 48 66 / 0.037),
+    0 0.375px 0.75px rgb(52 48 66 / 0.037),
+    0 0.75px 1.5px rgb(52 48 66 / 0.037),
+    0 1.5px 3px rgb(52 48 66 / 0.037);
+  --clay-hundida:
+    inset 1px 2px 2px rgb(52 48 66 / 0.07),
+    inset 3px 5px 8px rgb(52 48 66 / 0.06),
+    inset 6px 10px 18px rgb(52 48 66 / 0.04),
+    inset -1px -1px 1px rgb(255 255 255 / 0.9),
+    inset -3px -3px 6px rgb(255 255 255 / 0.5);
+  --clay-boton:
+    inset 0 1px 1px rgb(255 255 255 / 0.18),
+    inset 0 3px 6px rgb(255 255 255 / 0.06),
+    inset 0 -2px 4px rgb(0 0 0 / 0.3),
+    inset 0 -6px 12px rgb(0 0 0 / 0.22),
+    0 2px 4px rgb(30 28 40 / 0.125),
+    0 4px 8px rgb(30 28 40 / 0.125),
+    0 8px 16px rgb(30 28 40 / 0.125),
+    0 16px 32px rgb(30 28 40 / 0.125);
+  --clay-boton-pulsado:
+    inset 0 1px 2px rgb(0 0 0 / 0.35),
+    inset 0 3px 6px rgb(0 0 0 / 0.25),
+    inset 0 6px 12px rgb(0 0 0 / 0.15),
+    inset 0 -1px 1px rgb(255 255 255 / 0.06),
+    0 0.25px 0.5px rgb(30 28 40 / 0.062),
+    0 0.5px 1px rgb(30 28 40 / 0.062),
+    0 1px 2px rgb(30 28 40 / 0.062),
+    0 2px 4px rgb(30 28 40 / 0.062);
 }

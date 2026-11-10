@@ -1,0 +1,75 @@
+# Producción en Beryl (iot-fabian.tryberyl.dev).
+#
+# Autocontenido: volúmenes con nombre y nada publicado salvo la web en 127.0.0.1, donde el proxy
+# de Beryl (que pone el HTTPS) enruta el dominio. Despliegue = git pull && docker compose up -d --build.
+# Las variables llegan del entorno del proyecto en Beryl (los secretos, como secret://).
+name: iotluz
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: iotluz
+      POSTGRES_USER: iotluz
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U iotluz -d iotluz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 256m
+
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    environment: &entorno
+      ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://iotluz:${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}@db:5432/iotluz
+      MQTT_HOST: ${MQTT_HOST:?falta MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT:-8883}
+      MQTT_TLS: ${MQTT_TLS:-true}
+      MQTT_USER: ${MQTT_USER:?falta MQTT_USER}
+      MQTT_PASS: ${MQTT_PASS:?falta MQTT_PASS}
+      MQTT_BASE: ${MQTT_BASE:?falta MQTT_BASE}
+      # Distinto del Arduino y del backend de desarrollo: dos clientes con el mismo id se echan del broker.
+      MQTT_CLIENT_ID: ${MQTT_CLIENT_ID:-iotluz-beryl}
+      INTERVALO_GUARDADO_S: ${INTERVALO_GUARDADO_S:-30}
+      ARDUINO_TIMEOUT_S: ${ARDUINO_TIMEOUT_S:-90}
+      ADMIN_USER: ${ADMIN_USER:?falta ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?falta ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET}
+      JWT_HORAS: ${JWT_HORAS:-12}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://iot-fabian.tryberyl.dev}
+      FORWARDED_ALLOW_IPS: "*"
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 384m
+
+  # Arduino simulado: sin hardware conectado, publica datos y responde a las órdenes por MQTT.
+  # Usa el mismo broker y los mismos temas que el Arduino real: si se conecta el real, quitar este servicio.
+  simulador:
+    build: ../backend
+    restart: unless-stopped
+    command: ["python", "-u", "scripts/simular_arduino.py", "--intervalo", "5"]
+    environment: *entorno
+    mem_limit: 128m
+
+  web:
+    build: ../frontend
+    restart: unless-stopped
+    environment:
+      # El HTTPS lo pone Beryl: aquí solo HTTP.
+      SITE_ADDRESS: ":80"
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8117}:80"
+    mem_limit: 128m
+
+volumes:
+  pgdata:

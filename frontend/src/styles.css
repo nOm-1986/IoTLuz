@@ -4,402 +4,663 @@
  */
 
 /* ================================================================ LOGIN */
-/* Un aparato: chasis en relieve con una "pantalla" biselada (la sala de noche) y el acceso. */
+/* Un panel de control de luces físico, a pantalla completa: mitad sala (de noche, con la lámpara)
+   y mitad acceso. Solo emiten luz la lámpara, el LED del sensor y los LED de los campos; los
+   resplandores salen siempre de ahí. El volumen de las piezas sale de sombras (tokens --clay-*). */
 .login {
+  --led-apagado: #2c2c31;
   min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: var(--esp-3);
+}
+:root[data-tema='claro'] .login {
+  --led-apagado: #cdccd2;
 }
 .login-chasis {
-  width: min(74rem, 100%);
+  min-height: 100dvh;
   display: grid;
-  gap: var(--esp-3);
-  padding: var(--esp-3);
-  border-radius: 28px;
-  background: var(--relieve-tarjeta);
-  box-shadow:
-    var(--sombra-elevada),
-    inset 0 0 0 1px var(--color-borde);
+  grid-template-rows: minmax(30rem, 64svh) auto;
 }
 @media (min-width: 56rem) {
-  .login {
-    padding: var(--esp-7);
-  }
   .login-chasis {
-    grid-template-columns: 1.2fr 1fr;
-    min-height: min(46rem, calc(100dvh - 4rem));
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: none;
   }
 }
 
-/* Pantalla: siempre grafito oscuro (también en el tema claro), con las esquinas biseladas. */
+/* La sala: siempre de noche (también en el tema claro). El lienzo 3D la ocupa entera; la luz que
+   se ve en la pared es la de la lámpara, calculada en escena3d.js. */
 .login-escena {
-  --bisel: 22px;
+  --pad-x: var(--esp-5);
   position: relative;
   isolation: isolate;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: var(--esp-4);
-  padding: var(--esp-5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--esp-5);
+  padding: var(--esp-5) var(--pad-x);
+  background: #0d0d0f; /* el fondo del estudio 3D, mientras carga */
   color: #ecebef;
-  clip-path: polygon(
-    var(--bisel) 0,
-    calc(100% - var(--bisel)) 0,
-    100% var(--bisel),
-    100% calc(100% - var(--bisel)),
-    calc(100% - var(--bisel)) 100%,
-    var(--bisel) 100%,
-    0 calc(100% - var(--bisel)),
-    0 var(--bisel)
-  );
-  background: #141416;
-  box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.06),
-    inset 0 3px 12px rgb(0 0 0 / 0.5);
+  user-select: none;
 }
-/* La sala se ilumina cuando el sensor enciende la luz (luz real: aquí sí hay degradado). */
+@media (min-width: 56rem) {
+  .login-escena {
+    --pad-x: var(--esp-8);
+    padding: var(--esp-7) var(--pad-x) var(--esp-8);
+  }
+}
+/* Sin WebGL: la sala se ilumina con un fundido (paradas en curva, sin escalón). */
 .login-escena::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background: radial-gradient(70% 55% at 50% 45%, rgb(255 181 71 / 0.26), transparent 72%);
+  z-index: 0;
+  background: radial-gradient(
+    55% 50% at 50% 32%,
+    rgb(255 210 150 / 0.22) 0%,
+    rgb(255 210 150 / 0.162) 13.7%,
+    rgb(255 210 150 / 0.119) 24.5%,
+    rgb(255 210 150 / 0.084) 33.8%,
+    rgb(255 210 150 / 0.061) 40.7%,
+    rgb(255 210 150 / 0.043) 46.8%,
+    rgb(255 210 150 / 0.028) 52.6%,
+    rgb(255 210 150 / 0.017) 57.7%,
+    rgb(255 210 150 / 0.009) 62%,
+    rgb(255 210 150 / 0.004) 65.5%,
+    rgb(255 210 150 / 0.002) 68.5%,
+    transparent 72%
+  );
   opacity: 0;
-  transition: opacity 1400ms var(--curva-suave);
-}
-.login-escena[data-encendida]::before {
-  opacity: 1;
-  transition-duration: 500ms;
-}
-@media (min-width: 56rem) {
-  .login-escena {
-    --bisel: 28px;
-    padding: var(--esp-7) var(--esp-8);
-  }
-}
-
-.escena-barra {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--esp-3);
-  flex-wrap: wrap;
-}
-.login-marca {
-  display: flex;
-  align-items: center;
-  gap: var(--esp-3);
-  font-size: var(--t-lg);
-  font-weight: var(--peso-fuerte);
-  letter-spacing: -0.02em;
-}
-.login-marca .marca-casquillo {
-  fill: #9a99a1;
-}
-
-/* Tira del sensor: LED, nombre y estado, como la serigrafía de un aparato. */
-.sensor-tira {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--esp-2);
-  min-height: 2rem;
-  padding: 0 var(--esp-3);
-  border-radius: var(--radio-pildora);
-  background: #0e0e10;
-  box-shadow:
-    inset 0 1px 3px rgb(0 0 0 / 0.6),
-    0 1px 0 rgb(255 255 255 / 0.05);
-  font-size: var(--t-xs);
-  font-weight: var(--peso-medio);
-  letter-spacing: var(--tracking-rotulo);
-  text-transform: uppercase;
-  color: #9a99a1;
-  white-space: nowrap;
-}
-.sensor-led {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: #3a3a3f;
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6);
-  transition:
-    background-color var(--dur-media) var(--curva-suave),
-    box-shadow var(--dur-media) var(--curva-suave);
-}
-.sensor-nombre {
-  color: #b4b3ba;
-  font-weight: var(--peso-fuerte);
-}
-.sensor-estado {
-  font-variant-numeric: tabular-nums;
-}
-.login-escena[data-encendida] .sensor-led {
-  background: #ffb547;
-  box-shadow:
-    0 0 8px #ffb547,
-    0 0 2px #fff;
-}
-.login-escena[data-encendida] .sensor-estado {
-  color: #ffc777;
-}
-
-/* Zona de la luz: pozo hundido + halo + dial + bombilla 3D, en capas. */
-.escena-luz {
-  position: relative;
-  justify-self: center;
-  align-self: center;
-  width: min(100%, 25rem);
-  aspect-ratio: 1;
-}
-.escena-luz::before,
-.escena-luz > * {
-  position: absolute;
-}
-.escena-luz::before {
-  content: '';
-  inset: 7%;
-  border-radius: 50%;
-  background: #101012;
-  box-shadow:
-    inset 0 4px 14px rgb(0 0 0 / 0.55),
-    0 1px 0 rgb(255 255 255 / 0.05),
-    0 0 0 1px rgb(255 255 255 / 0.04);
-}
-.escena-halo {
-  inset: 6%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 190 90 / 0.55) 0%, rgb(255 160 40 / 0.16) 42%, transparent 70%);
-  opacity: 0.1;
-  transition: opacity 1400ms var(--curva-suave);
-}
-.login-escena[data-encendida] .escena-halo {
-  opacity: 1;
-  transition-duration: 450ms;
-}
-/* Arranque: el halo y el LED dudan con el mismo ritmo que el filamento 3D (escena3d.js:
-   0,55 → 0,2 → 0,85 → 0,6 en 380 ms), para que luz, halo y LED se enciendan como una sola cosa. */
-@media (prefers-reduced-motion: no-preference) {
-  .login-escena[data-encendida] .escena-halo,
-  .login-escena[data-encendida] .sensor-led {
-    animation: arranque 380ms steps(1, end);
-  }
-}
-@keyframes arranque {
-  0% {
-    opacity: 0.55;
-  }
-  24% {
-    opacity: 0.2;
-  }
-  45% {
-    opacity: 0.85;
-  }
-  68% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-/* Movimiento reducido: sin parpadeo ni saltos de brillo; la luz entra y sale con un fundido corto
-   (la regla global de ui.css anula las transiciones, aquí se devuelve solo la opacidad). */
-@media (prefers-reduced-motion: reduce) {
-  .login-escena::before,
-  .escena-halo,
-  .dial-arco,
-  .bombilla-3d-lienzo {
-    transition: opacity 300ms ease !important;
-  }
-}
-.dial {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.dial-marcas line {
-  stroke: rgb(200 199 206 / 0.22);
-  stroke-width: 0.35;
-  stroke-linecap: round;
-}
-.dial-marcas .dial-marca-mayor {
-  stroke: rgb(200 199 206 / 0.5);
-  stroke-width: 0.55;
-}
-.dial-pista {
-  fill: none;
-  stroke: rgb(0 0 0 / 0.4);
-  stroke-width: 1.6;
-}
-.dial-arco {
-  fill: none;
-  stroke: #ffb547;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 1.5px rgb(255 181 71 / 0.9));
-  opacity: 0;
-  transition:
-    stroke-dashoffset 100ms linear,
-    opacity var(--dur-media) var(--curva-suave);
-}
-.login-escena[data-encendida] .dial-arco {
-  opacity: 1;
-}
-
-.bombilla-3d {
-  inset: 9%;
-}
-.bombilla-3d-lienzo {
-  position: absolute;
-  inset: 0;
   transition: opacity 600ms var(--curva-suave);
 }
-.bombilla-3d[data-estado='cargando'] .bombilla-3d-lienzo {
+.login-escena[data-encendida]:has(.lampara[data-estado='sin-3d'])::before {
+  opacity: 1;
+}
+
+/* Lámpara: el lienzo cubre la sala entera, por detrás del texto. */
+.lampara {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 700ms var(--curva-suave);
+}
+.lampara[data-estado='cargando'] {
   opacity: 0;
 }
-.bombilla-3d-lienzo canvas {
+.lampara canvas {
   display: block;
   width: 100%;
   height: 100%;
 }
-.bombilla-plana {
+.lampara-plana {
   position: absolute;
-  top: 50%;
+  top: 0;
   left: 50%;
-  height: 74%;
-  transform: translate(-50%, -50%);
-  filter: grayscale(0.85) brightness(0.45);
-  transition: filter 600ms var(--curva-suave);
+  width: 60%;
+  transform: translateX(-50%);
 }
-.bombilla-3d[data-encendida] .bombilla-plana {
-  filter: drop-shadow(0 0 24px rgb(255 181 71 / 0.6));
+.lampara-plana-difusor {
+  stroke: #dedbd5;
+  transition: stroke 400ms var(--curva-suave);
 }
-
-.login-texto {
-  display: grid;
-  gap: var(--esp-3);
+.login-escena[data-encendida] .lampara-plana-difusor {
+  stroke: #fff6ea;
 }
-.login-titular {
-  font-size: clamp(1.75rem, 2.2vw + 1rem, 3rem);
-  font-weight: var(--peso-titular);
-  line-height: var(--interlinea-titular);
-  letter-spacing: var(--tracking-titular);
+/* Pantalla OLED de la consola (HTML sobre su ventana 3D, ver oled.js): píxeles blancos que
+   emiten su propia luz; lo secundario, tenue. El brillo es el de la propia pantalla. */
+.oled svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
-.login-titular-luz {
-  color: #ffc777;
-  text-shadow: 0 0 32px rgb(255 181 71 / 0.45);
+.oled-luz rect {
+  fill: #f4f3ef;
 }
-.login-bajada {
-  color: #b4b3ba;
-  font-size: var(--t-md);
-  max-width: 30rem;
+.oled-tenue rect {
+  fill: rgb(244 243 239 / 0.2);
 }
-.login-pista {
-  font-size: var(--t-sm);
-  color: #9a99a1;
+.oled {
+  filter: drop-shadow(0 0 1.5px rgb(255 255 255 / 0.55)) drop-shadow(0 0 6px rgb(255 255 255 / 0.18));
 }
-.pista-tactil {
-  display: none;
-}
-@media (hover: none) {
-  .pista-cursor {
-    display: none;
-  }
-  .pista-tactil {
-    display: inline;
-  }
-}
-/* Móvil: la escena se compacta (bombilla al lado del titular) para que el formulario quepa. */
-@media (max-width: 55.99rem) {
-  .login-escena {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    align-items: center;
-    gap: var(--esp-3) var(--esp-4);
-  }
-  .escena-barra {
-    grid-column: 1 / -1;
-  }
-  .escena-luz {
-    width: 9.5rem;
-  }
-  .login-texto {
-    gap: var(--esp-2);
-  }
-  .login-titular {
-    font-size: var(--t-lg);
-    line-height: var(--interlinea-ajustada);
-    letter-spacing: -0.01em; /* a este tamaño, el espaciado negativo del titular grande aprieta demasiado */
-  }
-  .login-bajada {
-    display: none;
-  }
-  .login-pista {
-    font-size: var(--t-xs);
-  }
+.oled[data-encendida='0'] .oled-luz rect {
+  fill: rgb(244 243 239 / 0.7);
 }
 
-/* Acceso. */
-.login-acceso {
+/* Hueco del sensor de presencia, colocado por Lampara.jsx sobre la lámpara. Recibe el dedo para
+   que arrastrarla en el móvil no desplace la página. */
+.escena-luz {
+  position: absolute;
+  z-index: 2;
+  touch-action: none;
+}
+
+/* ---- Mandos 3D: controles HTML invisibles encima de la perilla y el deslizador ---------
+   La consola se dibuja en 3D (escena3d.js); estos controles llevan la interacción real (ratón,
+   dedo, teclado y lector de pantalla) y Lampara.jsx los coloca justo encima de cada pieza.
+   Solo se ven al enfocarlos con el teclado: un anillo fino alrededor de la pieza. */
+.mando-3d {
+  position: absolute;
+  z-index: 4;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.mando-3d:focus {
+  outline: none;
+}
+.mando-3d:focus-visible {
+  box-shadow:
+    0 0 0 2px rgb(255 246 234 / 0.75),
+    0 0 0 6px rgb(255 246 234 / 0.12);
+}
+.mando-perilla {
+  border-radius: 50%;
+  cursor: grab;
+}
+.mando-perilla[data-agarrada] {
+  cursor: grabbing;
+}
+/* Rango nativo sin aspecto propio: pista y pulgar transparentes, del ancho del tirador 3D.
+   Lampara.jsx lo gira para que siga al fader (vertical en la consola). */
+.mando-deslizador {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: ns-resize;
+  transform-origin: 50% 50%;
+}
+.mando-deslizador::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+.mando-deslizador::-moz-range-track {
+  height: 100%;
+  background: transparent;
+}
+.mando-deslizador::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--pulgar, 28px);
+  height: 100%;
+  background: transparent;
+  border: 0;
+}
+.mando-deslizador::-moz-range-thumb {
+  width: var(--pulgar, 28px);
+  height: 100%;
+  background: transparent;
+  border: 0;
+}
+
+/* Acceso: la otra mitad del mismo aparato, en la línea de Teenage Engineering. Una placa
+   mecanizada (aluminio natural en el tema claro, anodizado negro en el oscuro) con cuatro tornillos
+   Torx, una pantalla OLED de píxeles para escribir, una tecla cuadrada naranja y dos LED numerados.
+   Solo emiten luz los píxeles de la pantalla y los LED: lo demás es materia y sombra. */
+.acceso {
+  --placa: #161618;
+  --placa-filo: rgb(255 255 255 / 0.06);
+  --serigrafia: #8a8a90;
+  --serigrafia-fuerte: #d4d3d6;
+  --titulo: #efeee9;
+  --hueco: #0c0c0e;
+  --agujero: #030304;
+  --tornillo: #2b2b2f;
+  --torx: #08080a;
+  --mando: #3b3b40;
+  --naranja: #ff6a2a;
+  --led-apagado: #2c2c31;
+  --muelle: linear(0, 0.043 5%, 0.139 10%, 0.255 15%, 0.373 20%, 0.483 25%, 0.58 30%, 0.663 35%, 0.733 40%, 0.789 45%, 0.835 50%, 0.872 55%, 0.901 60%, 0.924 65%, 0.941 70%, 0.955 75%, 0.966 80%, 0.974 85%, 0.98 90%, 0.985 95%, 1);
+  position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: var(--esp-5);
-  padding: var(--esp-4) var(--esp-4) var(--esp-3);
+  place-items: center;
+  padding: 5.5rem 1.5rem 7rem;
+  background: var(--placa);
+  /* junta con la sala: una sombra fina y un filo de luz, como dos placas atornilladas */
+  box-shadow:
+    inset 1px 0 0 rgb(0 0 0 / 0.7),
+    inset 2px 0 0 var(--placa-filo);
+  color: var(--titulo);
+}
+:root[data-tema='claro'] .acceso {
+  --placa: #d3d3d0;
+  --placa-filo: rgb(255 255 255 / 0.7);
+  --serigrafia: #5c5d61;
+  --serigrafia-fuerte: #232326;
+  --titulo: #141416;
+  --hueco: #bcbcb9;
+  --agujero: #2a2a2c;
+  --tornillo: #c4c4c1;
+  --torx: #3a3a3d;
+  --mando: #efefed;
+  --led-apagado: #a9a9a6;
+  box-shadow:
+    inset 1px 0 0 rgb(0 0 0 / 0.35),
+    inset 2px 0 0 var(--placa-filo);
+}
+
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Tornillos Torx en las esquinas: cabeza plana hundida en su avellanado, cada uno con su giro. */
+.tornillo {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  padding: 3px; /* el Torx es pequeño dentro de la cabeza, como en los de verdad */
+  border-radius: 50%;
+  background: var(--tornillo);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -1px 1px rgb(0 0 0 / 0.3),
+    0 0 0 1px rgb(0 0 0 / 0.22),
+    0 1px 0 1px var(--placa-filo);
+}
+.tornillo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  rotate: var(--giro);
+  fill: var(--torx);
+}
+.tornillo-ai { top: 1.125rem; left: 1.125rem; }
+.tornillo-ad { top: 1.125rem; right: 1.125rem; }
+.tornillo-bi { bottom: 1.125rem; left: 1.125rem; }
+.tornillo-bd { bottom: 1.125rem; right: 1.125rem; }
+
+.acceso-cabecera {
+  position: absolute;
+  top: 1.5rem;
+  right: 3rem;
 }
 @media (min-width: 56rem) {
-  .login-acceso {
-    padding: var(--esp-5) var(--esp-7) var(--esp-4);
+  .acceso-cabecera {
+    top: 2.25rem;
+    right: 3.25rem;
   }
 }
-.login-acceso-cabecera {
+
+/* Interruptor de tema: tres posiciones en una guía fresada; el mando salta de una a otra con un
+   muelle corto. La serigrafía de encima dice qué es cada posición. */
+.interruptor {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.interruptor-rotulos,
+.interruptor-guia {
+  display: grid;
+  grid-template-columns: repeat(3, 18px);
+  justify-items: center;
+}
+.interruptor-rotulos {
+  color: var(--serigrafia);
+}
+.interruptor-guia {
+  position: relative;
+  height: 20px;
+  padding: 0 3px;
+  border-radius: 6px;
+  background: var(--hueco);
+  box-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.45),
+    inset 0 0 0 1px rgb(0 0 0 / 0.2),
+    0 1px 0 var(--placa-filo);
+}
+.interruptor-posicion {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.interruptor-mando {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--mando);
+  translate: calc(var(--posicion) * 18px) 0;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 -1px 0 rgb(0 0 0 / 0.2),
+    0 1px 1px rgb(0 0 0 / 0.35),
+    0 2px 4px rgb(0 0 0 / 0.2);
+  transition: translate 380ms var(--muelle);
+  pointer-events: none;
+}
+/* Estrías para el dedo: tres rayas grabadas en el mando. */
+.interruptor-mando::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 1px;
+  height: 6px;
+  background: rgb(0 0 0 / 0.28);
+  box-shadow:
+    2px 0 0 rgb(0 0 0 / 0.28),
+    4px 0 0 rgb(0 0 0 / 0.28);
+}
+.interruptor:has(input:focus-visible) .interruptor-guia {
+  outline: 2px solid var(--serigrafia-fuerte);
+  outline-offset: 3px;
+}
+
+.acceso-form {
+  width: 100%;
+  max-width: 23rem;
+  display: grid;
+  gap: 1.25rem;
+}
+.acceso-titulos {
+  display: grid;
+  gap: var(--esp-2);
+  margin-bottom: var(--esp-2);
+}
+.acceso-titulos h2 {
+  font-size: clamp(2.125rem, 1.4vw + 1.4rem, 2.75rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--titulo);
+  text-wrap: balance;
+}
+.acceso-titulos p {
+  font-size: var(--t-sm);
+  color: var(--serigrafia);
+}
+
+/* Ventana de la pantalla: cristal negro enrasado en la placa, en los dos temas (una OLED apagada
+   es negra). Lo único que brilla son sus píxeles. */
+.acceso-ventana {
+  padding: 12px 12px 10px;
+  border-radius: 10px;
+  background: #050506;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.05),
+    inset 0 2px 6px rgb(0 0 0 / 0.8),
+    0 0 0 1px rgb(0 0 0 / 0.35),
+    0 1px 0 1px var(--placa-filo);
+}
+.acceso-form > * {
+  min-width: 0; /* la pantalla se mide a sí misma: que no ensanche la columna antes de medirse */
+}
+.pantalla {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.pantalla-pixeles {
+  display: block;
+}
+.pantalla-luz {
+  fill: #f4f3ef;
+  filter: drop-shadow(0 0 1.5px rgb(255 250 240 / 0.5)) drop-shadow(0 0 5px rgb(255 245 230 / 0.16));
+}
+.pantalla-tenue {
+  fill: #f4f3ef;
+  opacity: 0.2;
+}
+.pantalla-hueco {
+  fill: #050506;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pantalla-cursor {
+    animation: parpadeo-cursor 1.06s linear infinite;
+  }
+  .pantalla-punto {
+    animation: punto-espera 1.2s var(--curva-suave) infinite;
+    animation-delay: calc(var(--n) * 180ms);
+  }
+}
+@keyframes parpadeo-cursor {
+  0%, 49.9% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes punto-espera {
+  0%, 100% { opacity: 0.15; }
+  35% { opacity: 1; }
+}
+/* Los campos de verdad, invisibles sobre su fila. */
+.pantalla-fila {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.pantalla-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: 16px; /* iOS no hace zoom al enfocar */
+  cursor: text;
+}
+/* El autocompletado no avisa con un cambio al cargar: esta animación vacía sí se puede escuchar. */
+.pantalla-input:-webkit-autofill {
+  animation: autorrelleno 1ms;
+}
+@keyframes autorrelleno {
+  from { opacity: 0; }
+  to { opacity: 0; }
+}
+
+.acceso-mensaje {
+  min-height: 1.25rem;
+  margin-top: -0.25rem;
+  font-size: var(--t-sm);
+  color: var(--serigrafia);
+}
+.acceso-mensaje[data-tono='error'] {
+  color: #ff8a97;
+}
+:root[data-tema='claro'] .acceso-mensaje[data-tono='error'] {
+  color: #a8202f;
+}
+
+/* Fila de teclas: la pista de teclado a la izquierda y la tecla Entrar a la derecha. */
+.acceso-teclas {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-5);
+}
+.acceso-pista {
+  padding-top: 1.6rem;
+  font-size: 0.6875rem;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--serigrafia);
+}
+.acceso-pista kbd {
+  margin-right: 0.4rem;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font: inherit;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+@media (pointer: coarse) {
+  .acceso-pista {
+    visibility: hidden;
+  }
+}
+.tecla {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+}
+/* Tecla Entrar: plástico naranja en su pozo, con faldón. Se hunde en el instante de pulsar y
+   vuelve con un muelle sin rebote; mientras entra, se queda abajo. */
+.tecla-entrar {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: var(--naranja);
+  color: #2a1000;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 5px var(--hueco),
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -3px 0 rgb(0 0 0 / 0.14),
+    0 1px 1px 5px rgb(0 0 0 / 0.06),
+    0 2px 2px rgb(0 0 0 / 0.28),
+    0 5px 8px -2px rgb(0 0 0 / 0.25);
+  transition:
+    translate 420ms var(--muelle),
+    box-shadow 420ms var(--muelle),
+    filter var(--dur-rapida) var(--curva-suave);
+}
+.tecla-entrar:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.tecla-entrar:active:not(:disabled),
+.tecla-entrar:disabled {
+  translate: 0 2px;
+  transition-duration: 50ms;
+  box-shadow:
+    0 -2px 0 5px var(--hueco),
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 -1px 0 rgb(0 0 0 / 0.14),
+    0 -1px 1px 5px rgb(0 0 0 / 0.06),
+    0 0 1px rgb(0 0 0 / 0.35),
+    0 1px 2px -1px rgb(0 0 0 / 0.2);
+}
+.tecla-entrar:disabled {
+  cursor: progress;
+}
+.tecla-entrar:focus-visible {
+  outline: 2px solid var(--serigrafia-fuerte);
+  outline-offset: 8px;
+}
+.tecla-rotulo {
+  font-size: 0.6875rem;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--serigrafia);
+}
+
+/* Pie: dos LED numerados (servidor y sala) y una rejilla perforada. */
+.acceso-pie {
+  position: absolute;
+  left: 3rem;
+  right: 3rem;
+  bottom: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-.rotulo {
-  font-size: var(--t-xs);
-  font-weight: var(--peso-medio);
-  letter-spacing: var(--tracking-rotulo);
-  text-transform: uppercase;
-  color: var(--color-texto-3);
-}
-.login-form {
-  width: 100%;
-  max-width: 24rem;
-  justify-self: center;
-  align-self: center;
-  display: grid;
   gap: var(--esp-5);
 }
-.login-form-titulos {
-  display: grid;
-  gap: var(--esp-1);
-  margin-bottom: var(--esp-2);
+@media (min-width: 56rem) {
+  .acceso-pie {
+    bottom: 2.25rem;
+  }
 }
-.login-form-titulos h2 {
-  font-size: var(--t-2xl);
-  letter-spacing: -0.025em;
+.acceso-leds {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.6875rem;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--serigrafia);
 }
-.login-boton {
-  margin-top: var(--esp-2);
-  min-height: 3.25rem;
-  font-size: var(--t-md);
-}
-.login-pie {
+.acceso-leds li {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--esp-3);
-  text-align: center;
+  gap: 0.55rem;
 }
-/* Rejilla de puntos, como la de un altavoz. */
-.rejilla-puntos {
-  flex: none;
-  width: 2.25rem;
-  height: 0.75rem;
-  background-image: radial-gradient(circle, var(--color-texto-3) 1px, transparent 1.4px);
-  background-size: 6px 6px;
-  opacity: 0.5;
+.acceso-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-apagado);
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.5);
+}
+.acceso-led[data-led='ok'] {
+  background: #63e29b;
+  box-shadow:
+    0 0 1px rgb(255 255 255 / 0.7),
+    0 0 4px rgb(99 226 155 / 0.7),
+    0 0 10px rgb(99 226 155 / 0.3);
+}
+.acceso-led[data-led='mal'] {
+  background: #ff7183;
+  box-shadow:
+    0 0 1px rgb(255 255 255 / 0.6),
+    0 0 4px rgb(255 113 131 / 0.7),
+    0 0 10px rgb(255 113 131 / 0.3);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .acceso-led[data-led='espera'] {
+    animation: latido var(--dur-pulso) var(--curva-suave) infinite;
+  }
+}
+.rejilla {
+  width: 72px;
+  height: 24px;
+  background-image: radial-gradient(circle, var(--agujero) 0 1.6px, transparent 2.1px);
+  background-size: 8px 8px;
+  opacity: 0.85;
+}
+@media (max-width: 30rem) {
+  .rejilla {
+    display: none;
+  }
+}
+/* Mensaje vacío: no ocupa sitio (ni su hueco en la rejilla), pero sigue ahí para el lector. */
+.acceso-mensaje:empty {
+  min-height: 0;
+  margin-top: -1.25rem;
+}
+/* En pantallas estrechas el acceso se aprieta: menos aire arriba y abajo, y sin la pista de Tab
+   (con el dedo no hay tabulador); la tecla queda sola a la derecha, pegada a la pantalla. */
+@media (max-width: 56rem) {
+  .acceso {
+    padding: 4.75rem 1.5rem 5.5rem;
+  }
+  .acceso-form {
+    gap: 1rem;
+  }
+  .acceso-mensaje:empty {
+    margin-top: -1rem;
+  }
+  .acceso-pista {
+    display: none;
+  }
+  .acceso-teclas {
+    justify-content: flex-end;
+  }
 }
 
 /* ================================================================ PANEL */

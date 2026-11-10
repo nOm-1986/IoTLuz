@@ -1,84 +1,161 @@
-import { useRef } from 'react'
-import { Marca } from '../../ui/componentes.jsx'
-import Bombilla3D from './Bombilla3D.jsx'
+import { useMemo, useRef, useState } from 'react'
+import Lampara from './Lampara.jsx'
+import { prepararTacto, tocar } from './tacto.js'
 import { useSensorPresencia } from './useSensorPresencia.js'
 
-const DURACION_LUZ_MS = 5000
-const MARCAS = 60
+const RECORRIDO_GRADOS = 270 // la perilla recorre 270°: de abajo a la izquierda (0) a abajo a la derecha (100 %)
+const limitar = (v) => Math.max(0, Math.min(1, v))
 
-/** Dial alrededor de la bombilla: el arco ámbar se vacía mientras dura la luz (5 s). */
-function Dial({ fraccion }) {
-  const r = 46
-  const largo = 2 * Math.PI * r
-  return (
-    <svg className="dial" viewBox="0 0 100 100" aria-hidden="true">
-      <g className="dial-marcas">
-        {Array.from({ length: MARCAS }, (_, i) => (
-          <line
-            key={i}
-            x1="50"
-            y1={i % 5 === 0 ? 1.2 : 1.8}
-            x2="50"
-            y2="3.4"
-            transform={`rotate(${(i * 360) / MARCAS} 50 50)`}
-            className={i % 5 === 0 ? 'dial-marca-mayor' : undefined}
-          />
-        ))}
-      </g>
-      <circle className="dial-pista" cx="50" cy="50" r={r} />
-      <circle
-        className="dial-arco"
-        cx="50"
-        cy="50"
-        r={r}
-        strokeDasharray={largo}
-        strokeDashoffset={largo * (1 - fraccion)}
-        transform="rotate(-90 50 50)"
-      />
-    </svg>
-  )
-}
+/** Proyección de impulso de Apple: hasta dónde llega un giro soltado con velocidad `v` (por s). */
+const proyectar = (v, deceleracion = 0.99) => ((v / 1000) * deceleracion) / (1 - deceleracion)
+
+/** Marca de la perilla (cada 10 %) en la que cae un valor; los extremos tienen la suya. */
+const marcaDe = (v) => (v <= 0 ? 'min' : v >= 1 ? 'max' : Math.floor(v * 10 + 1e-6))
 
 /**
- * Pantalla de la izquierda del login: la sala de noche con la bombilla 3D y el sensor de
- * presencia. Es un componente aparte para que su cuenta atrás (10 veces por segundo mientras
- * hay luz) no vuelva a dibujar el formulario.
+ * Parte izquierda del login: la sala 3D (lámparas de aro, piezas y la consola de mandos en primer
+ * plano). La perilla (intensidad) y el deslizador (duración) se dibujan en 3D; encima van
+ * controles HTML invisibles que llevan la interacción real, también con teclado y lector de
+ * pantalla. Es un componente aparte para que su cuenta atrás (10 veces por segundo mientras hay
+ * luz) no vuelva a dibujar el formulario.
  */
 export default function EscenaLogin() {
-  const zonaLuz = useRef(null)
-  const { encendida, restanteMs, apunte } = useSensorPresencia(zonaLuz, DURACION_LUZ_MS)
-  const segundos = Math.ceil(restanteMs / 1000)
+  const sala = useRef(null)
+  const perilla = useRef(null)
+  const deslizador = useRef(null)
+  const arrastre = useRef(null)
+  const [intensidad, setIntensidad] = useState(0.7)
+  const [duracionS, setDuracionS] = useState(15)
+  const [pulsado, setPulsado] = useState({ perilla: false, deslizador: false })
+  const marcaPerilla = useRef(marcaDe(0.7))
+  const duracionMs = duracionS * 1000
+  // La sala empieza a oscuras: al cargar entra una esfera rodando y su movimiento la enciende.
+  const { encendida, restanteMs, activar } = useSensorPresencia(duracionMs)
+  const pantalla = useMemo(() => ({ encendida, restanteMs, duracionMs }), [encendida, restanteMs, duracionMs])
+
+  const fijarIntensidad = (v) => {
+    const nuevo = limitar(Math.round(v * 100) / 100)
+    // Tacto al pasar por una marca de la escala; más marcado en los topes.
+    const marca = marcaDe(nuevo)
+    if (marca !== marcaPerilla.current) {
+      tocar(typeof marca === 'string' ? 'tope' : 'marca')
+      marcaPerilla.current = marca
+    }
+    setIntensidad(nuevo)
+    activar()
+  }
+  // Giro circular, como una perilla real: el ángulo del puntero alrededor del centro de la
+  // perilla. Hacia la derecha (sentido horario) sube, como cualquier regulador.
+  const anguloPuntero = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2))
+  }
+  const perillaBajar = (e) => {
+    prepararTacto()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    arrastre.current = { angulo: anguloPuntero(e), v: intensidad, historial: [{ t: e.timeStamp, v: intensidad }] }
+    e.currentTarget.dataset.agarrada = ''
+    setPulsado((p) => ({ ...p, perilla: true })) // la pieza responde al pulsar, no al soltar
+    activar()
+  }
+  const perillaMover = (e) => {
+    const a = arrastre.current
+    if (!a) return
+    const ang = anguloPuntero(e)
+    let delta = ang - a.angulo
+    if (delta > Math.PI) delta -= 2 * Math.PI
+    if (delta < -Math.PI) delta += 2 * Math.PI
+    a.angulo = ang
+    a.v = limitar(a.v + (delta * 180) / Math.PI / RECORRIDO_GRADOS) // en pantalla el ángulo crece en sentido horario
+    a.historial.push({ t: e.timeStamp, v: a.v })
+    if (a.historial.length > 6) a.historial.shift()
+    fijarIntensidad(a.v)
+  }
+  const perillaSoltar = (e) => {
+    const a = arrastre.current
+    arrastre.current = null
+    delete e.currentTarget.dataset.agarrada
+    setPulsado((p) => ({ ...p, perilla: false }))
+    // Inercia: si se suelta girando, sigue hasta donde la lleva su velocidad y frena ahí.
+    if (a && a.historial.length > 1) {
+      const h0 = a.historial[0]
+      const h1 = a.historial[a.historial.length - 1]
+      const dt = (h1.t - h0.t) / 1000
+      const vel = dt > 0 && h1.t - h0.t < 120 ? (h1.v - h0.v) / dt : 0
+      if (Math.abs(vel) > 0.35) fijarIntensidad(a.v + proyectar(vel))
+    }
+  }
+  const perillaTecla = (e) => {
+    prepararTacto()
+    const pasos = { ArrowUp: 0.05, ArrowRight: 0.05, ArrowDown: -0.05, ArrowLeft: -0.05, PageUp: 0.2, PageDown: -0.2 }
+    if (e.key in pasos) fijarIntensidad(intensidad + pasos[e.key])
+    else if (e.key === 'Home') fijarIntensidad(0)
+    else if (e.key === 'End') fijarIntensidad(1)
+    else return
+    e.preventDefault()
+  }
 
   return (
-    <section className="login-escena" data-encendida={encendida || undefined} aria-labelledby="login-titular">
-      <div className="escena-barra">
-        <div className="login-marca">
-          <Marca tamano={28} />
-          <span>IoTLuz</span>
-        </div>
-        <div className="sensor-tira" aria-hidden="true">
-          <span className="sensor-led" />
-          <span className="sensor-nombre">PIR</span>
-          <span className="sensor-estado">{encendida ? `Movimiento · ${segundos} s` : 'En espera'}</span>
-        </div>
-      </div>
+    <section ref={sala} className="login-escena" data-encendida={encendida || undefined} aria-label="Sala">
+      <h1 className="solo-lectores">IoTLuz</h1>
 
-      <div className="escena-luz" ref={zonaLuz}>
-        <div className="escena-halo" aria-hidden="true" />
-        <Dial fraccion={restanteMs / DURACION_LUZ_MS} />
-        <Bombilla3D encendida={encendida} apunte={apunte} />
-      </div>
+      <Lampara
+        sala={sala}
+        perilla={perilla}
+        deslizador={deslizador}
+        encendida={encendida}
+        intensidad={intensidad}
+        duracionS={duracionS}
+        pantalla={pantalla}
+        pulsado={pulsado}
+        alMovimiento={activar} // mover una pieza es lo que ve el sensor de la sala
+      />
 
-      <div className="login-texto">
-        <h1 id="login-titular" className="login-titular">
-          La luz de la sala, <span className="login-titular-luz">en tus manos.</span>
-        </h1>
-        <p className="login-bajada">Mira si está encendida, cuánta luz hay y cambia el modo en segundos.</p>
-        <p className="login-pista" aria-hidden="true">
-          <span className="pista-cursor">Acerca el cursor a la bombilla:</span>
-          <span className="pista-tactil">Toca la bombilla:</span> el sensor la enciende 5 s, como en la sala.
-        </p>
-      </div>
+      {/* Mandos accesibles: invisibles, encima de la perilla y el deslizador 3D. */}
+      <div
+        ref={perilla}
+        className="mando-3d mando-perilla"
+        role="slider"
+        tabIndex={0}
+        aria-label="Intensidad de la luz"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(intensidad * 100)}
+        aria-valuetext={`${Math.round(intensidad * 100)} %`}
+        onPointerDown={perillaBajar}
+        onPointerMove={perillaMover}
+        onPointerUp={perillaSoltar}
+        onPointerCancel={perillaSoltar}
+        onKeyDown={perillaTecla}
+      />
+      <input
+        ref={deslizador}
+        className="mando-3d mando-deslizador"
+        type="range"
+        min={1}
+        max={20}
+        step={1}
+        value={duracionS}
+        aria-label="Duración de la luz"
+        aria-valuetext={`${duracionS} segundos`}
+        onChange={(e) => {
+          const s = Number(e.target.value)
+          if (s !== duracionS) tocar(s === 1 || s === 20 ? 'tope' : 'marca') // un golpe por segundo
+          setDuracionS(s)
+          activar()
+        }}
+        onPointerDown={() => {
+          prepararTacto()
+          setPulsado((p) => ({ ...p, deslizador: true }))
+        }}
+        onPointerUp={() => setPulsado((p) => ({ ...p, deslizador: false }))}
+        onPointerCancel={() => setPulsado((p) => ({ ...p, deslizador: false }))}
+        onKeyDown={(e) => {
+          prepararTacto()
+          if (e.key.startsWith('Arrow')) setPulsado((p) => ({ ...p, deslizador: true }))
+        }}
+        onKeyUp={() => setPulsado((p) => ({ ...p, deslizador: false }))}
+      />
     </section>
   )
 }

@@ -14,7 +14,7 @@ export default function App() {
   }, [])
 
   const expirar = useCallback(
-    () => cerrarSesion('Tu sesión ha expirado. Vuelve a iniciar sesión.'),
+    () => cerrarSesion('Tu sesión caducó. Vuelve a entrar.'),
     [cerrarSesion],
   )
 

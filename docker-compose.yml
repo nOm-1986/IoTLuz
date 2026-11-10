@@ -13,7 +13,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     # Solo accesible desde este equipo (útil para ejecutar el backend con venv).
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
