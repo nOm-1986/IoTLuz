@@ -57,6 +57,9 @@ services:
     restart: unless-stopped
     command: ["python", "-u", "scripts/simular_arduino.py", "--intervalo", "5"]
     environment: *entorno
+    # La imagen del backend comprueba su API por HTTP; el simulador no sirve HTTP.
+    healthcheck:
+      disable: true
     mem_limit: 128m
 
   web:
