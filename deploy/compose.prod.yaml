@@ -29,12 +29,12 @@ services:
       ENV: production
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       DATABASE_URL: postgresql+psycopg://iotluz:${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}@db:5432/iotluz
-      MQTT_HOST: ${MQTT_HOST:?falta MQTT_HOST}
+      MQTT_HOST: ${MQTT_HOST:-jc971116.ala.eu-central-1.emqxsl.com}
       MQTT_PORT: ${MQTT_PORT:-8883}
       MQTT_TLS: ${MQTT_TLS:-true}
       MQTT_USER: ${MQTT_USER:?falta MQTT_USER}
       MQTT_PASS: ${MQTT_PASS:?falta MQTT_PASS}
-      MQTT_BASE: ${MQTT_BASE:?falta MQTT_BASE}
+      MQTT_BASE: ${MQTT_BASE:-unisalle-fabian-7391/sala/luz/}
       # Distinto del Arduino y del backend de desarrollo: dos clientes con el mismo id se echan del broker.
       MQTT_CLIENT_ID: ${MQTT_CLIENT_ID:-iotluz-beryl}
       INTERVALO_GUARDADO_S: ${INTERVALO_GUARDADO_S:-30}
