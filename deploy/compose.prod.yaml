@@ -1,4 +1,4 @@
-# Producción en Beryl (iot-fabian.tryberyl.dev).
+# Producción en Beryl (iot-fabian.tryberyl.dev). Recibe los datos del Arduino real por MQTT.
 #
 # Autocontenido: volúmenes con nombre y nada publicado salvo la web en 127.0.0.1, donde el proxy
 # de Beryl (que pone el HTTPS) enruta el dominio. Despliegue = git pull && docker compose up -d --build.
@@ -25,7 +25,7 @@ services:
   backend:
     build: ../backend
     restart: unless-stopped
-    environment: &entorno
+    environment:
       ENV: production
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       DATABASE_URL: postgresql+psycopg://iotluz:${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}@db:5432/iotluz
@@ -49,18 +49,6 @@ services:
       db:
         condition: service_healthy
     mem_limit: 384m
-
-  # Arduino simulado: sin hardware conectado, publica datos y responde a las órdenes por MQTT.
-  # Usa el mismo broker y los mismos temas que el Arduino real: si se conecta el real, quitar este servicio.
-  simulador:
-    build: ../backend
-    restart: unless-stopped
-    command: ["python", "-u", "scripts/simular_arduino.py", "--intervalo", "5"]
-    environment: *entorno
-    # La imagen del backend comprueba su API por HTTP; el simulador no sirve HTTP.
-    healthcheck:
-      disable: true
-    mem_limit: 128m
 
   web:
     build: ../frontend
